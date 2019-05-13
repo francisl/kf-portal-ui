@@ -99,7 +99,7 @@ Pie.defaultProps = {
   isInteractive: true,
   colors: 'greys',
   tooltip: PieTooltip,
-  onClick: x => x,
+  // onClick: x => x,
   defs: [
     {
       id: 'lines',

@@ -19,6 +19,7 @@ const SQONProvider = compose(
 )(({ api, history, children, state: { loggedInUser } }) => {
   const COHORT_BUILDER_FILTER_STATE = 'COHORT_BUILDER_FILTER_STATE';
   const { id: virtualStudyId } = parseQueryString(history.location.search);
+  const { sqon: oldSqon } = parseQueryString(history.location.search);
   const initialState = {
     sqons: [
       {
@@ -44,6 +45,12 @@ const SQONProvider = compose(
         sqons: localState.sqons,
         activeIndex: localState.activeIndex,
       });
+    }
+    if (oldSqon) {
+      s.setState({
+        sqons: JSON.parse(oldSqon),
+      });
+      mergeSqonToActiveIndex(s);
     }
   };
 

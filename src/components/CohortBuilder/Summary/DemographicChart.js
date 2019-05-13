@@ -27,6 +27,29 @@ const DemographicChart = ({ data, theme, isLoading: isParentLoading }) => (
         title={'Gender'}
         data={data.gender}
         colors={[theme.chartColors.orange, '#FFFFFF']}
+        onClick={x => {
+          const newSqon = encodeURI(
+            JSON.stringify(
+              [
+                {
+                  op: 'and',
+                  content: [
+                    {
+                      op: 'in',
+                      content: {
+                        field: 'gender',
+                        value: [x.label],
+                      },
+                    },
+                  ],
+                },
+              ],
+              null,
+              0,
+            ),
+          );
+          window.location.href = `/explore?sqon=${newSqon}`;
+        }}
       />
       <Pie
         style={{ height: '42%', width: '50%', marginBottom: '10px', marginTop: '5px' }}
