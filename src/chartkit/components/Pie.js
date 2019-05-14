@@ -48,6 +48,7 @@ class Pie extends Component {
     if (data) {
       const { index } = data;
       this.setState({ highlightedIndex: index });
+      e.target.style.cursor = 'pointer';
     }
   }
 
@@ -72,7 +73,12 @@ class Pie extends Component {
           colorBy={data => data.color}
           onMouseEnter={this.onMouseEnter}
           onMouseLeave={this.onMouseLeave}
-          fill={[{ match: x => x.data.index === this.state.highlightedIndex, id: 'lines' }]}
+          fill={[
+            {
+              match: x => x.data.index === this.state.highlightedIndex,
+              id: 'lines',
+            },
+          ]}
         />
       </PieWrapper>
     );
@@ -99,7 +105,6 @@ Pie.defaultProps = {
   isInteractive: true,
   colors: 'greys',
   tooltip: PieTooltip,
-  // onClick: x => x,
   defs: [
     {
       id: 'lines',

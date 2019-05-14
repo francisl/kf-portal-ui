@@ -23,12 +23,17 @@ const DemographicChart = ({ data, theme, isLoading: isParentLoading }) => (
   <CohortCard showHeader={false} loading={isParentLoading}>
     <PieChartContainer>
       <Pie
-        style={{ height: '42%', width: '50%', marginBottom: '10px', marginTop: '5px' }}
+        style={{
+          height: '42%',
+          width: '50%',
+          marginBottom: '10px',
+          marginTop: '5px',
+        }}
         title={'Gender'}
         data={data.gender}
         colors={[theme.chartColors.orange, '#FFFFFF']}
         onClick={x => {
-          const newSqon = encodeURI(
+          const pieSqon = encodeURI(
             JSON.stringify(
               [
                 {
@@ -48,20 +53,71 @@ const DemographicChart = ({ data, theme, isLoading: isParentLoading }) => (
               0,
             ),
           );
-          window.location.href = `/explore?sqon=${newSqon}`;
+          window.location.href = `/explore?sqon=${pieSqon}`;
         }}
       />
       <Pie
-        style={{ height: '42%', width: '50%', marginBottom: '10px', marginTop: '5px' }}
+        style={{
+          height: '42%',
+          width: '50%',
+          marginBottom: '10px',
+          marginTop: '5px',
+        }}
         title={'Ethnicity'}
         data={data.ethnicity}
         colors={[theme.chartColors.darkblue, '#FFFFFF']}
+        onClick={x => {
+          const pieSqon = encodeURI(
+            JSON.stringify(
+              [
+                {
+                  op: 'and',
+                  content: [
+                    {
+                      op: 'in',
+                      content: {
+                        field: 'ethnicity',
+                        value: [x.id],
+                      },
+                    },
+                  ],
+                },
+              ],
+              null,
+              0,
+            ),
+          );
+          window.location.href = `/explore?sqon=${pieSqon}`;
+        }}
       />
       <Pie
         style={{ height: '42%', width: '50%' }}
         title={'Race'}
         data={data.race}
         colors={[theme.chartColors.lightpurple, '#FFFFFF']}
+        onClick={x => {
+          const pieSqon = encodeURI(
+            JSON.stringify(
+              [
+                {
+                  op: 'and',
+                  content: [
+                    {
+                      op: 'in',
+                      content: {
+                        field: 'race',
+                        value: [x.label],
+                      },
+                    },
+                  ],
+                },
+              ],
+              null,
+              0,
+            ),
+          );
+          window.location.href = `/explore?sqon=${pieSqon}`;
+        }}
       />
 
       <Pie
@@ -69,6 +125,29 @@ const DemographicChart = ({ data, theme, isLoading: isParentLoading }) => (
         title={'Family Composition'}
         data={data.familyComposition}
         colors={[theme.chartColors.lightblue, '#FFFFFF']}
+        onClick={x => {
+          const pieSqon = encodeURI(
+            JSON.stringify(
+              [
+                {
+                  op: 'and',
+                  content: [
+                    {
+                      op: 'in',
+                      content: {
+                        field: 'familyComposition',
+                        value: [x.label],
+                      },
+                    },
+                  ],
+                },
+              ],
+              null,
+              0,
+            ),
+          );
+          window.location.href = `/explore?sqon=${pieSqon}`;
+        }}
       />
     </PieChartContainer>
   </CohortCard>

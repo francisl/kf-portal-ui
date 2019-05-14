@@ -19,7 +19,7 @@ const SQONProvider = compose(
 )(({ api, history, children, state: { loggedInUser } }) => {
   const COHORT_BUILDER_FILTER_STATE = 'COHORT_BUILDER_FILTER_STATE';
   const { id: virtualStudyId } = parseQueryString(history.location.search);
-  const { sqon: oldSqon } = parseQueryString(history.location.search);
+  const { sqon: pieSqon } = parseQueryString(history.location.search);
   const initialState = {
     sqons: [
       {
@@ -46,11 +46,16 @@ const SQONProvider = compose(
         activeIndex: localState.activeIndex,
       });
     }
-    if (oldSqon) {
+    if (pieSqon) {
+      let localState = JSON.parse(savedLocalState);
+      const parsedSqon = JSON.parse(pieSqon);
+
+      localState.sqons[localState.activeIndex].content.push(parsedSqon[0].content[0]);
+
       s.setState({
-        sqons: JSON.parse(oldSqon),
+        sqons: savedLocalState ? localState.sqons : JSON.parse(pieSqon),
+        activeIndex: localState.activeIndex,
       });
-      mergeSqonToActiveIndex(s);
     }
   };
 
@@ -87,6 +92,14 @@ const SQONProvider = compose(
           localStorage.setItem(COHORT_BUILDER_FILTER_STATE, JSON.stringify(initialState));
         });
     }
+
+    localStorage.setItem(
+      COHORT_BUILDER_FILTER_STATE,
+      JSON.stringify({
+        sqons: s.state.sqons,
+        activeIndex: s.state.activeIndex,
+      }),
+    );
   };
 
   const loadVirtualStudy = ({ setState }) => async virtualStudyId => {
