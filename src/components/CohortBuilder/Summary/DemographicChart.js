@@ -77,7 +77,7 @@ const DemographicChart = ({ data, theme, isLoading: isParentLoading }) => (
                       op: 'in',
                       content: {
                         field: 'ethnicity',
-                        value: [x.id],
+                        value: [x.label.replace(' Or ', ' or ')],
                       },
                     },
                   ],
@@ -106,7 +106,7 @@ const DemographicChart = ({ data, theme, isLoading: isParentLoading }) => (
                       op: 'in',
                       content: {
                         field: 'race',
-                        value: [x.label],
+                        value: [x.label.replace(' Or ', ' or ')],
                       },
                     },
                   ],
