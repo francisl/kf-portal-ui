@@ -55,7 +55,7 @@ const sqon = {
 };
 
 const SHORT_NAME_FIELD = 'participants.study.short_name';
-const TEXT_DIAGNOSES_FIELD = 'participants.diagnoses.diagnosis';
+const TEXT_DIAGNOSES_FIELD = 'participants.diagnoses.mondo_id_diagnosis';
 
 const getFileRepoURL = (field, value) => {
   sqon.content[0].content = { field, value };

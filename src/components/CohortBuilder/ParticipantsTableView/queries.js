@@ -33,7 +33,7 @@ export const participantsQuery = (sqon, sort, pageSize = 20, pageIndex = 0) => (
                   edges {
                     node {
                       age_at_event_days
-                      diagnosis
+                      mondo_id_diagnosis
                       diagnosis_category
                     }
                   }
@@ -90,7 +90,7 @@ export const participantQueryExport = (sqon, pageSize) => ({
                   edges {
                     node {
                       age_at_event_days
-                      diagnosis
+                      mondo_id_diagnosis
                       diagnosis_category
                     }
                   }
@@ -135,8 +135,8 @@ const transformData = data => {
       const diagnosisCategories = get(node, 'diagnoses.hits.edges', []).map(edge =>
         get(edge, 'node.diagnosis_category'),
       );
-      const diagnosis = get(node, 'diagnoses.hits.edges', []).map(edge =>
-        get(edge, 'node.diagnosis'),
+      const mondoIdDiagnosis = get(node, 'diagnoses.hits.edges', []).map(edge =>
+        get(edge, 'node.mondo_id_diagnosis'),
       );
       const ageAtDiagnosis = get(node, 'diagnoses.hits.edges', []).map(edge =>
         get(edge, 'node.age_at_event_days'),
@@ -151,7 +151,7 @@ const transformData = data => {
         isProband: get(node, 'is_proband', false) ? 'Yes' : 'No',
         vitalStatus: get(node, 'outcome.vital_status'),
         diagnosisCategories,
-        diagnosis,
+        mondoIdDiagnosis,
         ageAtDiagnosis,
         gender: get(node, 'gender'),
         familyId: get(node, 'family_id'),

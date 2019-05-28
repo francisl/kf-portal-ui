@@ -21,7 +21,6 @@ const findColumnsByField_File = [
   'ethnicity',
   'phenotype.hpo_phenotype_observed',
   'phenotype.hpo_phenotype_not_observed',
-  'diagnoses.diagnosis',
   'diagnoses.external_id',
   'diagnoses.age_at_event_days',
   'diagnoses.diagnosis_category',

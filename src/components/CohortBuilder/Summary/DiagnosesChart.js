@@ -14,9 +14,9 @@ const mostFrequentDiagnosisTooltip = data => {
 };
 
 const toSingleDiagQueries = ({ topDiagnoses, sqon }) =>
-  topDiagnoses.map(diagnosis => ({
+  topDiagnoses.map(mondo_id_diagnosis => ({
     query: gql`
-      query($sqon: JSON, $diagnosis: String) {
+      query($sqon: JSON, $mondo_id_diagnosis: String) {
         participant {
           familyMembers: aggregations(
             aggregations_filter_themselves: true
@@ -24,7 +24,7 @@ const toSingleDiagQueries = ({ topDiagnoses, sqon }) =>
               op: "and"
               content: [
                 $sqon
-                { op: "in", content: { field: "diagnoses.diagnosis", value: [$diagnosis] } }
+                { op: "in", content: { field: "diagnoses.mondo_id_diagnosis", value: [$mondo_id_diagnosis] } }
                 { op: "in", content: { field: "is_proband", value: ["false", "__missing__"] } }
               ]
             }
@@ -42,12 +42,12 @@ const toSingleDiagQueries = ({ topDiagnoses, sqon }) =>
               op: "and"
               content: [
                 $sqon
-                { op: "in", content: { field: "diagnoses.diagnosis", value: [$diagnosis] } }
+                { op: "in", content: { field: "diagnoses.mondo_id_diagnosis", value: [$mondo_id_diagnosis] } }
                 { op: "in", content: { field: "is_proband", value: ["true"] } }
               ]
             }
           ) {
-            diagnoses__diagnosis {
+            diagnoses__mondo_id_diagnosis {
               buckets {
                 doc_count
                 key
@@ -57,15 +57,15 @@ const toSingleDiagQueries = ({ topDiagnoses, sqon }) =>
         }
       }
     `,
-    variables: { sqon, diagnosis },
+    variables: { sqon, mondo_id_diagnosis },
     transform: data => ({
-      label: startCase(diagnosis),
+      label: startCase(mondo_id_diagnosis),
       familyMembers: get(
         data,
-        'data.participant.familyMembers.diagnoses__diagnosis.buckets[0].doc_count',
+        'data.participant.familyMembers.diagnoses__mondo_id_diagnosis.buckets[0].doc_count',
         0,
       ),
-      probands: get(data, 'data.participant.proband.diagnoses__diagnosis.buckets[0].doc_count', 0),
+      probands: get(data, 'data.participant.proband.diagnoses__mondo_id_diagnosis.buckets[0].doc_count', 0),
     }),
   }));
 
@@ -114,7 +114,7 @@ export const diagnosesQuery = sqon => ({
     query($sqon: JSON) {
       participant {
         aggregations(filters: $sqon, aggregations_filter_themselves: true) {
-          diagnoses__diagnosis {
+          diagnoses__mondo_id_diagnosis {
             buckets {
               doc_count
               key
@@ -126,7 +126,7 @@ export const diagnosesQuery = sqon => ({
   `,
   variables: { sqon },
   transform: data => {
-    const buckets = get(data, 'data.participant.aggregations.diagnoses__diagnosis.buckets');
+    const buckets = get(data, 'data.participant.aggregations.diagnoses__mondo_id_diagnosis.buckets');
     return _(buckets)
       .orderBy(bucket => bucket.doc_count, 'desc')
       .take(10)
