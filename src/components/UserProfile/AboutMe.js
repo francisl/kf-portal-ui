@@ -211,7 +211,7 @@ export default compose(
               </TealActionButton>
             </ActionBar>
           )}
-          <Contact mt={'50px'} profile={profile} />
+          <Contact mt={'50px'} profile={profile} canEdit={canEdit} />
         </Column>
 
         <Column width="35%">

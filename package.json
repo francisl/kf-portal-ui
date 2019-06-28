@@ -105,7 +105,8 @@
     "url-loader": "0.6.2",
     "victory-pie": "^14.0.1",
     "whatwg-fetch": "2.0.3",
-    "yup": "^0.25.1"
+    "yup": "^0.25.1",
+    "semantic-ui-react": "latest"
   },
   "scripts": {
     "start": "cross-env NODE_PATH=\"src\" node scripts/start.js",

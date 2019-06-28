@@ -132,7 +132,7 @@ export default compose(
       </CardHeader>
       {!interests.length && (
         <H4 mt={'29px'}>
-          Please specify Kids First studies, diseases and other areas that interest you.
+          This section could contain specific Kids First studies, diseases and other areas of interest, but it is currently empty.
         </H4>
       )}
 

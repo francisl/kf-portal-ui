@@ -178,7 +178,7 @@ const App = compose(
           }
         />
         <Route
-          path="/user/:egoId"
+          path="/self"
           exact
           render={props =>
             forceSelectRole({
@@ -186,6 +186,21 @@ const App = compose(
               isLoadingUser,
               Component: UserProfile,
               loggedInUser,
+              userID: null,
+              ...props,
+            })
+          }
+        />
+        <Route
+          path="/user/:userID"
+          exact
+          render={props =>
+            forceSelectRole({
+              api,
+              isLoadingUser,
+              Component: UserProfile,
+              loggedInUser,
+              userID: props.match.params.userID,
               ...props,
             })
           }

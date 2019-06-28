@@ -19,12 +19,68 @@ import Input from 'uikit/Input';
 import styled from 'react-emotion';
 import ExternalLink from 'uikit/ExternalLink';
 import { gen3WebRoot } from 'common/injectGlobals';
+import CheckboxBubble from '../../uikit/CheckboxBubble';
+import { Field } from 'formik';
+import { Paragraph } from '../../uikit/Core';
+import { updateProfile } from '../../services/profiles';
+
+
+import { Button } from 'semantic-ui-react';
+import 'semantic-ui-css/semantic.min.css';
 
 const CardBody = styled('div')`
   margin: -15px 0 15px 0;
   font-family: Montserrat, sans-serif, sans-serif;
   font-size: 13px;
 `;
+
+const Label = styled('label')`
+  margin-left: 10px;
+  font-size: 14px;
+`;
+
+const FormParagraph = styled(Paragraph)`
+  line-height: 26px;
+  font-size: 14px;
+`;
+
+class Toggle extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {active: props.checked}
+  }
+
+  render() {
+
+    return (
+      <Button toggle active={this.state.active} onClick={() => {
+        this.props.onClick(!this.state.active);
+        this.setState(prevState => ({ active: !prevState.active }))
+      }}>
+        {this.state.active ? "Public" : "Private"}
+      </Button>
+    )
+  }
+}
+
+/*
+<CheckboxBubble
+            style={{transition: "all 2s ease-in"}}
+            active={profile.isPublic}
+            onClick={(event) => {
+              event.target.style.background = "linear-gradient(90deg, #FFC0CB 50%, #00FFFF 50%)";
+              console.log(event.target.style)
+            }}
+          >
+            <input type="checkbox" checked={profile.isPublic} />
+            <Label>
+              <FormParagraph>
+                {' heyo my dude '}
+              </FormParagraph>
+            </Label>
+          </CheckboxBubble>
+ */
 
 const SettingsSection = x => <Column justifyContent="stretch" w="100%" pb={4} {...x} />;
 
@@ -33,11 +89,11 @@ export default compose(
   withApi,
   withState('mode', 'setMode', 'account'),
   fenceConnectionInitializeHoc,
-)(({ profile, submit, mode, setMode, state: { loginProvider }, ...props }) => (
+)(({ profile, api, submit, mode, setMode, state: { loginProvider }, ...props }) => (
   <Box style={{ maxWidth: 1050 }} pr={4} pl={0} pt="8px">
     <SettingsSection>
       <CardHeader mb="43px">
-        <Trans>Settings</Trans>
+        <Trans>Account Login</Trans>
       </CardHeader>
       <Column>
         Email Address:
@@ -46,6 +102,29 @@ export default compose(
           <Box ml={3}>
             <ConnectedWithBadge provider={loginProvider} />
           </Box>
+        </Row>
+      </Column>
+    </SettingsSection>
+
+    <SettingsSection>
+      <CardHeader mb="43px">
+        <Trans>Privacy</Trans>
+      </CardHeader>
+      <Column>
+        Privacy:
+        <Row alignItems="center" mt={2} >
+
+          <Paragraph>
+            When your profile is public, other logged in Kids First members (and potential contributors) will be able to
+            find your profile in searches. Turn this feature off if you would prefer to remain private and unsearchable.
+          </Paragraph>
+          <Toggle checked={profile.isPublic} onClick={ (checked) => {
+                profile.isPublic = checked;
+                submit({...profile});
+              }
+            }
+          />
+
         </Row>
       </Column>
     </SettingsSection>

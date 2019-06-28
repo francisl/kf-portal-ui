@@ -26,7 +26,7 @@ const Address = styled('div')`
   text-transform: capitalize;
 `;
 
-const Contact = compose(injectState, withApi)(({ effects: { setModal }, api, profile, mt }) => {
+const Contact = compose(injectState, withApi)(({ effects: { setModal }, api, profile, canEdit, mt }) => {
   const {
     addressLine1,
     addressLine2,
@@ -43,14 +43,16 @@ const Contact = compose(injectState, withApi)(({ effects: { setModal }, api, pro
     <Box mt={mt}>
       <CardHeader mb="29px">
         Contact Information
-        <EditButton
-          onClick={() => {
-            setModal({
-              title: 'Edit Basic Information',
-              component: <BasicInfoForm {...{ api }} />,
-            });
-          }}
-        />
+        {
+          canEdit ? <EditButton
+            onClick={() => {
+              setModal({
+                title: 'Edit Basic Information',
+                component: <BasicInfoForm {...{ api }} />,
+              });
+            }}
+          /> : ""
+        }
       </CardHeader>
 
       {(addressLine1 || addressLine2 || institution || city || country || state) && (

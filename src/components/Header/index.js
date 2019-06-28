@@ -120,13 +120,13 @@ const Header = ({
                   items={[
                     <DropdownLink
                       onClick={toggleDropdown}
-                      to={`/user/${loggedInUser.egoId}#aboutMe`}
+                      to={`/self#aboutMe`}
                     >
                       <Trans>My Profile</Trans>
                     </DropdownLink>,
                     <DropdownLink
                       onClick={toggleDropdown}
-                      to={`/user/${loggedInUser.egoId}#settings`}
+                      to={`/self#settings`}
                     >
                       Settings
                     </DropdownLink>,

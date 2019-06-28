@@ -35,6 +35,7 @@ const DEFAULT_FIELDS = `
   acceptedKfOptIn
   acceptedNihOptIn
   acceptedDatasetSubscriptionKfOptIn
+  isPublic
   sets {
     name
     size
@@ -45,26 +46,49 @@ const DEFAULT_FIELDS = `
 
 const url = urlJoin(personaApiRoot, 'graphql');
 
-export const getProfile = api => async () => {
-  const {
-    data: { self },
-  } = await api({
-    url,
-    body: {
-      query: `
-        query {
-          self {
-            ${DEFAULT_FIELDS}
+export const getProfile = api => async (id = null) => {
+
+  console.log("The requested ID from getProfile: "); console.log(id)
+
+  const apiCall =
+    id === null ?
+    await api({   //if we're not asking about an ID, query profile
+      url,
+      body: {
+        query: `
+            query {
+              self {
+                ${DEFAULT_FIELDS}
+            }
           }
-        }
-      `,
-    },
-  });
+        `,
+      },
+    })
+    : await api({ //if we're asking about an ID, query user
+      url,
+      body: {
+        query: `
+              query {
+                user(_id: "${id}") {
+                  ${DEFAULT_FIELDS}
+              }
+            }
+          `,
+      },
+    });
 
-  console.log(url)
-  console.log(self)
+  console.log("The api call: "); console.log(apiCall)
 
-  return self;
+  let profile;
+  if(id === null) {
+    profile = apiCall.data.self;
+  } else {
+    profile = apiCall.data.user;
+  }
+
+  console.log("the profile: "); console.log(profile)
+
+  return profile;
 };
 
 export const createProfile = api => async ({ egoId, lastName, firstName, email }) => {
@@ -91,6 +115,7 @@ export const createProfile = api => async ({ egoId, lastName, firstName, email }
 };
 
 export const updateProfile = api => async ({ user }) => {
+
   const {
     data: {
       userUpdate: { record },
@@ -110,6 +135,7 @@ export const updateProfile = api => async ({ user }) => {
       `,
     },
   });
+
 
   return record;
 };
