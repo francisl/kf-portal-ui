@@ -54,10 +54,14 @@ class Toggle extends React.Component {
   render() {
 
     return (
-      <Button toggle active={this.state.active} onClick={() => {
+      <Button active={this.state.active} onClick={() => {
         this.props.onClick(!this.state.active);
         this.setState(prevState => ({ active: !prevState.active }))
-      }}>
+      }}
+        //color={this.state.active ? "red" : null}
+
+        style={{...(this.state.active ? {backgroundColor: "#19A9C4"} : {backgroundColor: "#008199"}), color: "white"}}
+      >
         {this.state.active ? "Public" : "Private"}
       </Button>
     )

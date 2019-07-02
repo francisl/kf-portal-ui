@@ -178,7 +178,7 @@ const App = compose(
           }
         />
         <Route
-          path="/self"
+          path="/profile"
           exact
           render={props =>
             forceSelectRole({
