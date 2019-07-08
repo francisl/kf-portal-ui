@@ -19,6 +19,7 @@ import Contact from './Contact';
 import { H3, H4 } from 'uikit/Headings';
 import { WhiteButton } from 'uikit/Button';
 import { TealActionButton } from '../../uikit/Button';
+import PrivacyWrap from './ui/PrivacyWrap';
 
 const ActionBar = styled(Row)`
   justify-content: flex-end;
@@ -111,72 +112,68 @@ export default compose(
             <H3 lineHeight="1.71" letterSpacing="0.2px">
               My bio
             </H3>
-            {(bioTextarea === '' || isEditingBackgroundInfo) &&
-              canEdit && (
-                <H4>
-                  Share information about your professional background and your research interests.
-                </H4>
-              )}
-            <EditableLabel
-              autoFocus={focusedTextArea !== 'myStory'}
-              type="textarea"
-              isEditing={isEditingBackgroundInfo}
-              disabled={true}
-              required={false}
-              name="bio"
-              value={bioTextarea}
-              onChange={e => setBioTextarea(e.target.value)}
-              placeholderComponent={
-                canEdit && (
-                  <ClickToAdd
-                    onClick={() => {
-                      handleEditingBackgroundInfo({
-                        value: !isEditingBackgroundInfo,
-                      });
-                      setFocusedTextArea('myBio');
-                    }}
-                  >
-                    click to add
-                  </ClickToAdd>
-                )
-              }
-              saveOnKeyDown={false}
-              renderButtons={() => <div />}
-            />
+            <PrivacyWrap accessor={"bio"} profile={profile} editing={isEditingBackgroundInfo}>
+              <EditableLabel
+                autoFocus={focusedTextArea !== 'myStory'}
+                type="textarea"
+                isEditing={isEditingBackgroundInfo}
+                disabled={true}
+                required={false}
+                name="bio"
+                value={bioTextarea}
+                onChange={e => setBioTextarea(e.target.value)}
+                placeholderComponent={
+                  canEdit && (
+                    <ClickToAdd
+                      onClick={() => {
+                        handleEditingBackgroundInfo({
+                          value: !isEditingBackgroundInfo,
+                        });
+                        setFocusedTextArea('myBio');
+                      }}
+                    >
+                      click to add
+                    </ClickToAdd>
+                  )
+                }
+                saveOnKeyDown={false}
+                renderButtons={() => <div />}
+              />
+            </PrivacyWrap>
           </StyledSection>
           <StyledSection className={'userStory'}>
             <H3 lineHeight="1.71" letterSpacing="0.2px" mt="40px">
               My story
             </H3>
-            {(storyTextarea === '' || isEditingBackgroundInfo) &&
-              canEdit && <H4>Share why you’re a part of the Kids First community.</H4>}
-            <EditableLabel
-              autoFocus={focusedTextArea === 'myStory'}
-              type="textarea"
-              isEditing={isEditingBackgroundInfo}
-              disabled={true}
-              required={false}
-              name="story"
-              value={storyTextarea}
-              onChange={e => setStoryTextarea(e.target.value)}
-              displayButtons={true}
-              placeholderComponent={
-                canEdit && (
-                  <ClickToAdd
-                    onClick={() => {
-                      handleEditingBackgroundInfo({
-                        value: !isEditingBackgroundInfo,
-                      });
-                      setFocusedTextArea('myStory');
-                    }}
-                  >
-                    click to add
-                  </ClickToAdd>
-                )
-              }
-              saveOnKeyDown={false}
-              renderButtons={() => <div />}
-            />
+            <PrivacyWrap accessor={"story"} profile={profile} editing={isEditingBackgroundInfo}>
+              <EditableLabel
+                autoFocus={focusedTextArea === 'myStory'}
+                type="textarea"
+                isEditing={isEditingBackgroundInfo}
+                disabled={true}
+                required={false}
+                name="story"
+                value={storyTextarea}
+                onChange={e => setStoryTextarea(e.target.value)}
+                displayButtons={true}
+                placeholderComponent={
+                  canEdit && (
+                    <ClickToAdd
+                      onClick={() => {
+                        handleEditingBackgroundInfo({
+                          value: !isEditingBackgroundInfo,
+                        });
+                        setFocusedTextArea('myStory');
+                      }}
+                    >
+                      click to add
+                    </ClickToAdd>
+                  )
+                }
+                saveOnKeyDown={false}
+                renderButtons={() => <div />}
+              />
+            </PrivacyWrap>
           </StyledSection>
           {localStorage.getItem('SHOW_DELETE_ACCOUNT') && (
             <div>

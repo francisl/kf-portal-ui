@@ -15,6 +15,7 @@ import Row from 'uikit/Row';
 import { Tag } from 'uikit/Tags';
 import { H4 } from 'uikit/Headings';
 import { WhiteButton, TealActionButton } from '../../uikit/Button';
+import PrivacyWrap from './ui/PrivacyWrap';
 
 const InterestsContainer = styled(Box)`
   background-color: ${({ theme }) => theme.backgroundGrey};
@@ -130,84 +131,84 @@ export default compose(
             />
           ))}
       </CardHeader>
-      {!interests.length && (
-        <H4 mt={'29px'}>
-          This section could contain specific Kids First studies, diseases and other areas of interest, but it is currently empty.
-        </H4>
-      )}
 
-      {canEdit &&
-        !interests.length &&
-        !editingResearchInterests && (
-          <ClickToAdd
-            onClick={() => {
-              handleEditingResearchInterests({ value: !editingResearchInterests });
-              setFocusedTextArea('googleScholarId');
-            }}
-          >
-            click to add
-          </ClickToAdd>
-        )}
-
-      <Row flexWrap="wrap" pt={2} pb={2}>
-        {interests.map((x, i) => (
-          <Tag
-            key={i}
-            clickable={editingResearchInterests}
-            onClick={() => editingResearchInterests && setInterests(xor(interests, [x]))}
-          >
-            {x}
-          </Tag>
-        ))}
-      </Row>
-
-      {editingResearchInterests && (
-        <React.Fragment>
-          <InterestsContainer>
-            <InterestsLabel>Kids First Disease Areas:</InterestsLabel>
-            <InterestsSelect
-              onChange={e => {
-                setInterests([...interests, e.target.value.toLowerCase()]);
+      <PrivacyWrap accessor={"interests"} profile={profile} editing={editingResearchInterests}>
+        <div>
+          {canEdit &&
+          !interests.length &&
+          !editingResearchInterests && (
+            <ClickToAdd
+              onClick={() => {
+                handleEditingResearchInterests({ value: !editingResearchInterests });
+                setFocusedTextArea('googleScholarId');
               }}
-              value=""
             >
-              <InterestsOption value="" disabled selected>
-                -- Select an option --
-              </InterestsOption>
-              {DISEASE_AREAS.filter(area => !interests.includes(area.toLowerCase())).map(area => (
-                <InterestsOption value={area} key={area}>
-                  {area}
-                </InterestsOption>
-              ))}
-            </InterestsSelect>
-            <InterestsLabel>Kids First Studies:</InterestsLabel>
-            <InterestsSelect
-              onChange={e => {
-                setInterests([...interests, e.target.value.toLowerCase()]);
-              }}
-              value=""
-            >
-              <InterestsOption value="" disabled selected>
-                -- Select an option --
-              </InterestsOption>
-              {STUDY_SHORT_NAMES.filter(study => !interests.includes(study.toLowerCase())).map(
-                study => (
-                  <InterestsOption value={study} key={study}>
-                    {study}
-                  </InterestsOption>
-                ),
-              )}
+              click to add
+            </ClickToAdd>
+          )}
+
+          <Row flexWrap="wrap" pt={2} pb={2}>
+            {interests.map((x, i) => (
+              <Tag
+                key={i}
+                clickable={editingResearchInterests}
+                onClick={() => editingResearchInterests && setInterests(xor(interests, [x]))}
               >
-            </InterestsSelect>
-            <InterestsLabel>Other areas of interest:</InterestsLabel>
-            <InterestsAutocomplete {...{ interests, setInterests }} />
-          </InterestsContainer>
+                {x}
+              </Tag>
+            ))}
+          </Row>
 
-          <ActionButtons
-            {...{ handleEditingResearchInterests, setInterests, submit, profile, interests }}
-          />
-        </React.Fragment>
-      )}
+          {editingResearchInterests && (
+            <React.Fragment>
+              <InterestsContainer>
+                <InterestsLabel>Kids First Disease Areas:</InterestsLabel>
+                <InterestsSelect
+                  onChange={e => {
+                    setInterests([...interests, e.target.value.toLowerCase()]);
+                  }}
+                  value=""
+                >
+                  <InterestsOption value="" disabled selected>
+                    -- Select an option --
+                  </InterestsOption>
+                  {DISEASE_AREAS.filter(area => !interests.includes(area.toLowerCase())).map(area => (
+                    <InterestsOption value={area} key={area}>
+                      {area}
+                    </InterestsOption>
+                  ))}
+                </InterestsSelect>
+                <InterestsLabel>Kids First Studies:</InterestsLabel>
+                <InterestsSelect
+                  onChange={e => {
+                    setInterests([...interests, e.target.value.toLowerCase()]);
+                  }}
+                  value=""
+                >
+                  <InterestsOption value="" disabled selected>
+                    -- Select an option --
+                  </InterestsOption>
+                  {STUDY_SHORT_NAMES.filter(study => !interests.includes(study.toLowerCase())).map(
+                    study => (
+                      <InterestsOption value={study} key={study}>
+                        {study}
+                      </InterestsOption>
+                    ),
+                  )}
+                  >
+                </InterestsSelect>
+                <InterestsLabel>Other areas of interest:</InterestsLabel>
+                <InterestsAutocomplete {...{ interests, setInterests }} />
+              </InterestsContainer>
+
+              <ActionButtons
+                {...{ handleEditingResearchInterests, setInterests, submit, profile, interests }}
+              />
+            </React.Fragment>
+          )}
+        </div>
+      </PrivacyWrap>
+
     </InterestsCard>
   ),
 );

@@ -23,6 +23,7 @@ import { H4 } from 'uikit/Headings';
 
 import { TRACKING_EVENTS, trackProfileInteraction } from 'services/analyticsTracking';
 import { WhiteButton, TealActionButton } from '../../uikit/Button';
+import PrivacyWrap from './ui/PrivacyWrap';
 
 const StyledField = styled(Field)`
   ${({ theme }) => theme.input};
@@ -281,83 +282,74 @@ export default compose(
               ))}
           </CardHeader>
 
-          <StyledSection>
-            {canEdit &&
-              !isEditing &&
-              !Object.values(values).filter(Boolean).length && (
-                <Fragment>
-                  <H4 mt="29px">
-                    Add links to your personal channels such as Google Scholar, ORCID ID, GitHub,
-                    LinkedIn, Twitter and Facebook.
-                  </H4>
-                  <ClickToAdd onClick={() => setIsEditing(true)}>click to add</ClickToAdd>
-                </Fragment>
-              )}
-
-            <List>
-              {Object.entries(socialItems)
-                .filter(([field]) => isEditing || values[field])
-                .map(([field, config]) => (
-                  <ListItem key={field} isEditing={isEditing}>
-                    {isEditing ? (
-                      <Column pb="5px">
-                        <StyledLabel>{config.name}</StyledLabel>
-                        <Row position="relative">
-                          {config.icon}
-                          <ClearIcon
-                            fill="#6a6262"
-                            width="35px"
-                            height="18px"
-                            display={
-                              currentField === field && values[field] !== '' ? 'block' : 'none'
-                            }
-                            onClick={() => setFieldValue(field, '')}
-                          />
-                          <Tooltip
-                            position="left"
-                            style={{ flex: '1 1 auto' }}
-                            html={(errors || {})[field]}
-                            open={Object.keys(errors || {}).includes(field)}
-                          >
-                            <StyledField
-                              css={
-                                Object.keys(errors || {}).includes(field)
-                                  ? `
+          <PrivacyWrap accessor={["website", "googleScholarId", "linkedin", "facebook", "twitter", "github", "orchid"]} profile={profile} editing={isEditing}>
+            <StyledSection>
+              <List>
+                {Object.entries(socialItems)
+                  .filter(([field]) => isEditing || values[field])
+                  .map(([field, config]) => (
+                    <ListItem key={field} isEditing={isEditing}>
+                      {isEditing ? (
+                        <Column pb="5px">
+                          <StyledLabel>{config.name}</StyledLabel>
+                          <Row position="relative">
+                            {config.icon}
+                            <ClearIcon
+                              fill="#6a6262"
+                              width="35px"
+                              height="18px"
+                              display={
+                                currentField === field && values[field] !== '' ? 'block' : 'none'
+                              }
+                              onClick={() => setFieldValue(field, '')}
+                            />
+                            <Tooltip
+                              position="left"
+                              style={{ flex: '1 1 auto' }}
+                              html={(errors || {})[field]}
+                              open={Object.keys(errors || {}).includes(field)}
+                            >
+                              <StyledField
+                                css={
+                                  Object.keys(errors || {}).includes(field)
+                                    ? `
                             border-color: red;
                           `
-                                  : ''
-                              }
-                              id={field}
-                              name={field}
-                              placeholder={config.placeholder}
-                              type={config.type}
-                              value={values[field]}
-                              onClick={e => handleSetCurrentField(e, field)}
-                              onChange={e => handleSetCurrentField(e, field)}
-                            />
-                          </Tooltip>
-                        </Row>
-                      </Column>
-                    ) : (
-                      <Fragment>
-                        {config.icon}
-                        <ExternalLink
-                          href={config.href ? config.href(values[field]) : values[field]}
-                        >
-                          {config.linkText ? config.linkText(values[field]) : values[field]}
-                        </ExternalLink>
-                      </Fragment>
-                    )}
-                  </ListItem>
-                ))}
-              {isEditing ? (
-                <ActionButtons
-                  {...{ handleIsEditing, handleReset, handleSubmit, errors }}
-                  mt={'20px'}
-                />
-              ) : null}
-            </List>
-          </StyledSection>
+                                    : ''
+                                }
+                                id={field}
+                                name={field}
+                                placeholder={config.placeholder}
+                                type={config.type}
+                                value={values[field]}
+                                onClick={e => handleSetCurrentField(e, field)}
+                                onChange={e => handleSetCurrentField(e, field)}
+                              />
+                            </Tooltip>
+                          </Row>
+                        </Column>
+                      ) : (
+                        <Fragment>
+                          {config.icon}
+                          <ExternalLink
+                            href={config.href ? config.href(values[field]) : values[field]}
+                          >
+                            {config.linkText ? config.linkText(values[field]) : values[field]}
+                          </ExternalLink>
+                        </Fragment>
+                      )}
+                    </ListItem>
+                  ))}
+                {isEditing ? (
+                  <ActionButtons
+                    {...{ handleIsEditing, handleReset, handleSubmit, errors }}
+                    mt={'20px'}
+                  />
+                ) : null}
+              </List>
+            </StyledSection>
+          </PrivacyWrap>
+
         </Form>
       </Fragment>
     </InterestsCard>
