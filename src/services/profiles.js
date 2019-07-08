@@ -48,8 +48,6 @@ const url = urlJoin(personaApiRoot, 'graphql');
 
 export const getProfile = api => async (id = null) => {
 
-  console.log("The requested ID from getProfile: "); console.log(id)
-
   const apiCall =
     id === null ?
     await api({   //if we're not asking about an ID, query profile
@@ -77,16 +75,12 @@ export const getProfile = api => async (id = null) => {
       },
     });
 
-  console.log("The api call: "); console.log(apiCall)
-
   let profile;
   if(id === null) {
     profile = apiCall.data.self;
   } else {
     profile = apiCall.data.user;
   }
-
-  console.log("the profile: "); console.log(profile)
 
   return profile;
 };

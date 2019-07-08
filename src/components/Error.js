@@ -3,14 +3,14 @@ import { Trans } from 'react-i18next';
 
 import SplashPage from 'components/SplashPage';
 
-export default () => (
+export default ({text = "An error has occurred, please try again later"}) => (
   <SplashPage>
     <div
       css={`
         text-align: center;
       `}
     >
-      <Trans>An error has occurred, please try again later</Trans>
+      <Trans>{text}</Trans>
     </div>
   </SplashPage>
 );

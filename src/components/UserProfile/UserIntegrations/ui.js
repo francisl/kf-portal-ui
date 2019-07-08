@@ -23,6 +23,8 @@ const ConnectButtonWrapper = styled(ActionButton)`
 const ExternalLink = applyDefaultStyles(ExternalLinkIcon);
 const RightArrow = applyDefaultStyles(RightIcon);
 
+export { ConnectButtonWrapper };
+
 export const ConnectButton = compose(
   withApi,
   injectState,

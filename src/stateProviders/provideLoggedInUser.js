@@ -97,7 +97,6 @@ export default provideState({
             ...state,
             isLoadingUser: false,
             loggedInUser: user,
-            percentageFilled,
           };
         })
         .catch(err => console.log(err));

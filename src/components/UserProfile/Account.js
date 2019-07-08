@@ -19,72 +19,37 @@ import Input from 'uikit/Input';
 import styled from 'react-emotion';
 import ExternalLink from 'uikit/ExternalLink';
 import { gen3WebRoot } from 'common/injectGlobals';
-import CheckboxBubble from '../../uikit/CheckboxBubble';
-import { Field } from 'formik';
 import { Paragraph } from '../../uikit/Core';
-import { updateProfile } from '../../services/profiles';
 
 
-import { Button } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
+import { ConnectButtonWrapper } from './UserIntegrations/ui';
+import { Link } from 'react-router-dom';
+import IntegrationTableItem from './UserIntegrations/IntegrationTableItem';
+
+import PrivacyIcon from "assets/icon-privacy-private.svg";
+import PublicIcon from "assets/icon-privacy-public.svg";
 
 const CardBody = styled('div')`
   margin: -15px 0 15px 0;
   font-family: Montserrat, sans-serif, sans-serif;
   font-size: 13px;
 `;
-
-const Label = styled('label')`
+styled('label')`
   margin-left: 10px;
   font-size: 14px;
 `;
-
-const FormParagraph = styled(Paragraph)`
+styled(Paragraph)`
   line-height: 26px;
   font-size: 14px;
 `;
-
-class Toggle extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {active: props.checked}
-  }
-
-  render() {
-
-    return (
-      <Button active={this.state.active} onClick={() => {
-        this.props.onClick(!this.state.active);
-        this.setState(prevState => ({ active: !prevState.active }))
-      }}
-        //color={this.state.active ? "red" : null}
-
-        style={{...(this.state.active ? {backgroundColor: "#19A9C4"} : {backgroundColor: "#008199"}), color: "white"}}
-      >
-        {this.state.active ? "Public" : "Private"}
-      </Button>
-    )
-  }
-}
-
-/*
-<CheckboxBubble
-            style={{transition: "all 2s ease-in"}}
-            active={profile.isPublic}
-            onClick={(event) => {
-              event.target.style.background = "linear-gradient(90deg, #FFC0CB 50%, #00FFFF 50%)";
-              console.log(event.target.style)
-            }}
-          >
-            <input type="checkbox" checked={profile.isPublic} />
-            <Label>
-              <FormParagraph>
-                {' heyo my dude '}
-              </FormParagraph>
-            </Label>
-          </CheckboxBubble>
- */
+const PrivacyToggle = ({onClick, checked}) => {
+  return (
+    <ConnectButtonWrapper maxWidth={160} onClick={ () => {onClick(!checked); } }>
+      <div>{checked ? "Make Private" : "Make Public"}</div>
+    </ConnectButtonWrapper>
+  )
+};
 
 const SettingsSection = x => <Column justifyContent="stretch" w="100%" pb={4} {...x} />;
 
@@ -111,26 +76,32 @@ export default compose(
     </SettingsSection>
 
     <SettingsSection>
-      <CardHeader mb="43px">
+      <CardHeader mt="22px" mb="31px">
         <Trans>Privacy</Trans>
       </CardHeader>
-      <Column>
-        Privacy:
-        <Row alignItems="center" mt={2} >
+      <CardBody>
+        When your profile is public, other logged-in Kids First members (and potential contributors) will be able to
+        find your profile in searches. If your profile is private, you will be private and unsearchable to others.
+      </CardBody>
+      <IntegrationTable>
+        <IntegrationTableItem
+          connected={false}
 
-          <Paragraph>
-            When your profile is public, other logged in Kids First members (and potential contributors) will be able to
-            find your profile in searches. Turn this feature off if you would prefer to remain private and unsearchable.
-          </Paragraph>
-          <Toggle checked={profile.isPublic} onClick={ (checked) => {
-                profile.isPublic = checked;
-                submit({...profile});
-              }
-            }
-          />
+          //https://www.materialpalette.com/icons
+          logo={profile.isPublic
+            ? <img src={PublicIcon}  alt={"public icon"}/>
+            : <img src={PrivacyIcon}  alt={"private icon"}/>
+          }
 
-        </Row>
-      </Column>
+          description={
+            <span style={{ width: "100%" }}>
+              You profile is currently <b>{`${profile.isPublic ? "public" : "private"}`}</b>.
+              {profile.isPublic ? <span> Click <Link to={"/user/" + profile.egoId}>here</Link> to view your public profile.</span> : ""}
+            </span>
+          }
+          actions={<PrivacyToggle checked={profile.isPublic} onClick={ (checked) => {profile.isPublic = checked; submit({...profile});}}/>}
+        />
+      </IntegrationTable>
     </SettingsSection>
 
     <SettingsSection>
