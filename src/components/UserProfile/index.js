@@ -138,7 +138,12 @@ export default compose(
       return true;
     }
 
-    const unimportantKeys = new Set(["_id", "acceptedDatasetSubscriptionKfOptIn", "acceptedKfOptIn", "acceptedNihOptIn", "egoId", "eraCommonsID", "orchid", "acceptedTerms"]);
+    const unimportantKeys = new Set(
+      [
+        "_id", "acceptedDatasetSubscriptionKfOptIn", "acceptedKfOptIn", "acceptedNihOptIn", "egoId",
+        "eraCommonsID", "orchid", "acceptedTerms"
+      ]
+    );
 
     /**
      * Is the key interesting?

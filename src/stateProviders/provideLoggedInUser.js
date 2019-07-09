@@ -81,7 +81,7 @@ export default provideState({
               ? without(fields, 'institution', 'jobTitle')
               : fields;
           const profile = pick(omit(user, 'sets'), userRoleProfileFields);
-          const filledFields = Object.values(profile || {}).filter(
+          const filledFields = Object.values(profile || {}).filter( //PR NOTES!!!: can we override this with the new version? are there side effects??
             v => (isArray(v) && v.length) || (!isArray(v) && v),
           );
           const percentageFilled = filledFields.length / userRoleProfileFields.length;
