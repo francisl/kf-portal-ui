@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { H4 } from '../../../uikit/Headings';
+import toSpaceCase from '../Utils/toSpaceCase';
 
 /**
  * Wraps the children of the Privacy Wrap into a if-else if-else:
@@ -64,22 +65,3 @@ function joinWithLast(arr, lastSep=" or ") {
   return `${joined}${lastSep}${lastItem}`;
 }
 
-/**
- * Returns the space case conversion of a camel case word
- * @param word
- * @returns {string|string}
- */
-function toSpaceCase(word) {
-  let spaced = "";
-
-  for(let i=0; i<word.length; i++) {
-    const char = word.charAt(i);
-
-    if(char === char.toUpperCase()) spaced += " ";
-
-    if(i === 0) spaced += char.toUpperCase();
-    else spaced += char;
-  }
-
-  return spaced;
-}
