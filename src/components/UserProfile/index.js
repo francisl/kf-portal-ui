@@ -28,6 +28,12 @@ import { H1 } from 'uikit/Headings';
 import Error from '../Error';
 import { WhiteButton } from '../../uikit/Button';
 import PencilIcon from 'react-icons/lib/fa/pencil';
+import { EntityActionBar, EntityContent } from '../EntityPage';
+import ParticipantSummary from '../EntityPage/Participant/ParticipantSummary';
+import ParticipantClinical from '../EntityPage/Participant/ParticipantClinical';
+import SecondaryNavMenu from '../../uikit/SecondaryNav/SecondaryNavMenu';
+import SecondaryNavContent from '../../uikit/SecondaryNav/SecondaryNavContent';
+import MemberActionBar from './ui/MemberActionBar';
 
 export const userProfileBackground = (
   loggedInUser,
@@ -124,10 +130,8 @@ export default class UserProfile extends React.Component {
 
     // const values needed to build the page...
     const canEdit = this.props.userID === null;
-    const hash = this.props.location.hash;
-    const setModal = this.props.setModal;
+    const location = this.props.location;
     const submit = this.submit;
-    const api = this.props.api;
     const {profile} = this.state;
 
     if (profile === null) return <div>Loading...</div>;
@@ -137,14 +141,62 @@ export default class UserProfile extends React.Component {
 
     // generic editing stuff
     const EditButton = canEdit  // EditButton is either empty string or an actual edit button depending on canEdit
-      ? ({fields}) => {
-          return (
-            <Editor profile={profile} fields={fields}/>
-          )
-        }
+      ? ({fields}) => <Editor profile={profile} fields={fields}/>
       : (props) => "";
 
+    // what DON'T we want to see in a `role` page?
+    const filters = {research: [], community: ["jobTitle"], health: ["jobTitle", "institution"], patient: ["jobTitle", "institution"]};
 
+    console.log(profile)
+
+    const Gate = ({fields, title, Cell = (f) => <div>{f}: {profile[f]}</div>, Cells = {}, style={}}) => {
+      fields = fields.filter( f => {
+        if(f.includes(" ")) return true;
+        else return !filters[profile.roles[0]].includes(f)
+      });
+
+      const flexStyle = {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+      };
+
+      const display = fields.map( f => {
+          if(f in Cells) return Cells[f](profile);
+          else return Cell(f);
+        }
+      );
+
+      if(title === "" || title === undefined) return (
+        <div style={{...style, ...flexStyle}}>
+          <div>{display}</div>
+          <EditButton fields={fields}/>
+        </div>
+      );
+
+      return (
+        <div style={style}>
+          <h2 style={{...flexStyle,
+              color: "rgb(43, 56, 143)",
+              fontWeight: "500",
+              fontFamily: '"Montserrat", "sans-serif"',
+              fontSize: "22px",
+              lineHeight: "1.27",
+              letterSpacing: "0.3px",
+              margin: "13px 0px 29px",
+              padding: "0px 0px 10px",
+              textDecoration: "none",
+              borderBottom: "1px solid rgb(212, 214, 221)"
+            }}
+          >
+            {title}<EditButton fields={fields}/>
+          </h2>
+          {display}
+        </div>
+      )
+    };
+
+    //return <Gate fields={["firstName lastName"]} title={"Test"} Cells={ {"firstName lastName": (profile) => <div>{profile.firstName} {profile.lastName}</div>} }/>;
 
     const percentageFilled = (() => {
 
@@ -230,9 +282,71 @@ export default class UserProfile extends React.Component {
           justify-content: center;
         `}
         >
-          <Container row alignItems="center">
+          <div style={{display: "flex", flexDirection: 'row', width: "65%"}}>
+            <ProfileImage style={{flex: "none"}} email={profile.email || ''} />
+            <div style={{paddingLeft: "15px", paddingRight: "15px"}}>
+              <RoleIconButton/>
+              <Gate
+                style={{color: 'rgb(255, 255, 255)'}}
+                fields={["flname", "jobTitle", "institution", "department", "addr"]}
+                Cells={
+                  {
+                    flname: (profile) => <h1 style={{fontWeight: '500',
+                      letterSpacing: '0.4px',
+                      fontFamily: '"Montserrat", "sans-serif"',
+                      fontSize: '28px',
+                      lineHeight: '31px',
+                      margin: '16px 0px 10px',
+                      padding: '0px',
+                      textDecoration: 'none',}}>{profile.firstName} {profile.lastName}</h1>,
+                    jobTitle: (profile) => <div style={{fontSize: "1.4em"}}>{profile.jobTitle}</div>,
+                    addr: (profile) => <div style={{marginTop: "1em"}}>{[profile.city, profile.state, profile.country].filter(Boolean).join(', ')}</div>
+                  }
+                }
+                Cell={ (f) => <div style={{marginTop: "1em"}}>{profile[f]}</div>}
+              />
+            </div>
+          </div>
+
+        </div>
+        <MemberActionBar>
+          <SecondaryNavMenu
+            tabs={[
+              { name: 'About Me', hash: 'aboutMe' },
+              { name: 'Settings', hash: 'settings' }
+            ]}
+            defaultHash="aboutMe"
+            location={location}
+          />
+        </MemberActionBar>
+        <EntityContent>
+          <SecondaryNavContent target="aboutMe" location={location}>
+            <AboutMe profile={profile} canEdit={canEdit} submit={submit} />
+          </SecondaryNavContent>
+          <SecondaryNavContent target="settings" location={location}>
+            <div/>
+          </SecondaryNavContent>
+        </EntityContent>
+
+      </div>
+    )
+  }
+
+
+}
+
+/*
+
+        {(location === '#aboutMe' || location !== '#settings') && (
+          <AboutMe profile={profile} canEdit={canEdit} submit={submit} />
+        )}
+        {location === '#settings' && <Settings profile={profile} submit={submit} />}
+ */
+
+/*
+<Container row alignItems="center">
             <Row width="65%" pr={50} alignItems="center">
-              <ProfileImage email={profile.email || ''} />
+
               <div
                 className={css`
                 width: 49%;
@@ -240,7 +354,7 @@ export default class UserProfile extends React.Component {
                 padding: 0 15px;
               `}
               >
-                <RoleIconButton />
+
 
                 <H1 lineHeight="31px" mb="10px" mt="16px">
                   {`${profile.firstName} ${profile.lastName}`}
@@ -310,49 +424,4 @@ export default class UserProfile extends React.Component {
 
             </div>
           </Container>
-        </div>
-        {
-          canEdit ?
-            <div
-              className={css`
-          display: flex;
-          justify-content: center;
-          align-items: flex-start;
-          background: #fff;
-          box-shadow: 0px 0px 4.9px 0.1px #bbbbbb;
-          border: solid 1px #e0e1e6;
-        `}
-            >
-              <Container>
-                <ul >
-                  <li>
-                    <Link
-                      to="#aboutMe"
-                      className={hash === '#aboutMe' || hash !== '#settings' ? 'active' : ''}
-                    >
-                      About Me
-                    </Link>
-                  </li>
-                  {canEdit && (
-                    <li>
-                      <Link to="#settings" className={hash === '#settings' ? 'active' : ''}>
-                        Settings & Privacy
-                      </Link>
-                    </li>
-                  )}
-                </ul>
-              </Container>
-            </div>
-            : ""
-        }
-
-        {(hash === '#aboutMe' || hash !== '#settings') && (
-          <AboutMe profile={profile} canEdit={canEdit} submit={submit} />
-        )}
-        {hash === '#settings' && <Settings profile={profile} submit={submit} />}
-      </div>
-    )
-  }
-
-
-}
+ */
