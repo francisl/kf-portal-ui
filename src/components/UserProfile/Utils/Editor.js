@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { WhiteButton } from '../../../uikit/Button';
+import { TealActionButton, WhiteButton } from '../../../uikit/Button';
 import PencilIcon from 'react-icons/lib/fa/pencil';
 import styled from 'react-emotion';
 import { Field } from 'formik';
 import { space, width } from 'styled-system';
 import TitleH2 from './TitleH2';
+import { toSpaceCase, joinWithLast } from './toSpaceCase';
 
 const StyledLabel = styled('label')`
   font-size: 14px;
@@ -74,8 +75,8 @@ const fieldStyle = {
   transitionDuration: '0.15s, 0.15s',
   transitionProperty: 'border-color, box-shadow',
   transitionTimingFunction: 'ease-in-out, ease-in-out',
-  width: '665.094px',
-  maxWidth: "50%",
+  maxWidth: "100%",
+  width: "100%",
   wordSpacing: '0px',
   writingMode: 'horizontal-tb',
 };
@@ -98,10 +99,6 @@ export default class Editor extends React.Component {
         <StyledLabel style={{textTransform: "capitalize"}}>{field}:</StyledLabel>
         <input style={fieldStyle} name={field} value={profile[field]}/>
       </div>;
-
-    const subs = fields.map( field =>
-      <div style={{display: 'flex', flexWrap: "wrap"}}>{field.split(" ").map( f => <LabelInput field={f}/> )}</div>
-    );
 
     return (
       <div>
@@ -130,9 +127,11 @@ export default class Editor extends React.Component {
                 <div
                   style={{
                     margin: "0 auto",
-                    width: "90%",
-                    height: "90%",
                     backgroundColor: "white",
+                    width: "90%",
+                    padding: "2em",
+                    borderRadius: "4px",
+                    border: "1px solid rgb(202, 203, 207)"
                   }}
                 >
                   <TitleH2>
@@ -143,7 +142,26 @@ export default class Editor extends React.Component {
                       else return "Edit your "+(temp.split(" ").map(t => t.charAt(0).toLowerCase() + t.slice(1, t.length)).join(" "));
                     })()}
                   </TitleH2>
-                  {subs}
+                  <div style={{display: "grid", gridTemplateColumns: "1fr", gridGap: "2em"}}>
+                    {
+                      fields.map( field =>
+                        <div style={{display: 'grid', gridTemplateColumns: "1fr 1fr", gridGap: "1em", backgroundColor: "rgb(237, 238, 241)", padding: "0.5em"}}>
+                          {
+                            field.split(" ").map( f =>
+                              <div style={{boxSizing: "border-box"}}>
+                                <StyledLabel style={{textTransform: "capitalize"}}>{toSpaceCase(f)}</StyledLabel>
+                                <input style={fieldStyle} name={f} value={profile[f]}/>
+                              </div>
+                            )
+                          }
+                        </div>
+                      )
+                    }
+                  </div>
+                  <div style={{width: "100%", display: 'flex', justifyContent: "space-between", paddingTop: "2em"}}>
+                    <WhiteButton onClick={() => ""}>Cancel</WhiteButton>
+                    <TealActionButton onClick={() => ""}>Save</TealActionButton>
+                  </div>
                 </div>
               </div>
             )

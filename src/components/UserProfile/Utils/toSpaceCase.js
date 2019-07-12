@@ -3,7 +3,7 @@
  * @param word
  * @returns {string|string}
  */
-export default function toSpaceCase(word) {
+export function toSpaceCase(word) {
   let spaced = "";
 
   for(let i=0; i<word.length; i++) {
@@ -17,3 +17,23 @@ export default function toSpaceCase(word) {
 
   return spaced;
 }
+
+/**
+ * Takes an array of camelCase words and returns a string of space case words, separated by ", " and the final by
+ * lastSep
+ *
+ * @param arr
+ * @param lastSep
+ * @returns {string|*}
+ */
+export function joinWithLast(arr, lastSep=" or ") {
+  if(arr.length === 1) return arr[0];
+
+  const copy = [...arr];
+
+  const lastItem = toSpaceCase(copy.pop());
+  const joined = copy.map(toSpaceCase).join(", ");
+
+  return `${joined}${lastSep}${lastItem}`;
+}
+

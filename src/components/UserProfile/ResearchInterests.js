@@ -15,7 +15,6 @@ import Row from 'uikit/Row';
 import { Tag } from 'uikit/Tags';
 import { H4 } from 'uikit/Headings';
 import { WhiteButton, TealActionButton } from '../../uikit/Button';
-import PrivacyWrap from './ui/PrivacyWrap';
 
 const InterestsContainer = styled(Box)`
   background-color: ${({ theme }) => theme.backgroundGrey};
