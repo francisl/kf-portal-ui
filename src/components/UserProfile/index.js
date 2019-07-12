@@ -7,7 +7,6 @@ import { ROLES } from 'common/constants';
 
 import { ProfileImage } from './ui';
 import AboutMe from './AboutMe';
-import Settings from './Settings';
 import RoleIconButton from '../RoleIconButton';
 import Error from '../Error';
 import { EntityContent } from '../EntityPage';
@@ -135,7 +134,7 @@ export default class UserProfile extends React.Component {
                 <AboutMe profile={profile} Gate={Gate} />
               </SecondaryNavContent>
               <SecondaryNavContent target="settings" location={location}>
-                <div/>
+                <div></div>
               </SecondaryNavContent>
             </EntityContent>
             )

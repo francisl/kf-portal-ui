@@ -75,6 +75,7 @@ const fieldStyle = {
   transitionProperty: 'border-color, box-shadow',
   transitionTimingFunction: 'ease-in-out, ease-in-out',
   width: '665.094px',
+  maxWidth: "50%",
   wordSpacing: '0px',
   writingMode: 'horizontal-tb',
 };
@@ -90,23 +91,18 @@ export default class Editor extends React.Component {
   render() {
     const profile = this.props.profile;
 
-    const fields = (() => {
-      const temp = [];
-      this.props.fields.map( f => console.log(f.split(" ")));
-      this.props.fields.forEach( f => f.split(" ").forEach( n => temp.push(n)));
-      console.log(temp)
-      return temp;
-    })();
+    const fields = this.props.fields;
 
-    const subs = !Array.isArray(this.props.fields)
-      ? ""
-      : fields.map( field =>
-        <div>
-          <StyledLabel style={{textTransform: "capitalize"}}>{field}:</StyledLabel>
-          <input style={fieldStyle} name={field} value={profile[field]}/>
-        </div>
-      )
-    ;
+    const LabelInput = ({field}) =>
+      <div style={{width: "50%", boxSizing: "border-box"}}>
+        <StyledLabel style={{textTransform: "capitalize"}}>{field}:</StyledLabel>
+        <input style={fieldStyle} name={field} value={profile[field]}/>
+      </div>;
+
+    const subs = fields.map( field =>
+      <div style={{display: 'flex', flexWrap: "wrap"}}>{field.split(" ").map( f => <LabelInput field={f}/> )}</div>
+    );
+
     return (
       <div>
         {
@@ -115,27 +111,28 @@ export default class Editor extends React.Component {
             : (
               <div
                 style={{
-                  position: "absolute",
-                  left: "50%",
-                  transform: "translate( -50%, calc( -50% - 0.5px ) )",
-                  top: "50%",
+                  position: "fixed",
+                  left: "0px",
+                  top: "0px",
+                  bottom: "0px",
+                  right: "0px",
                   height: "100%",
                   width: "100%",
                   zIndex: 150,
                   backgroundColor: "rgba(0,0,0,0.4)", /* Black w/ opacity */
                   color: 'black',
+                  display: "flex",
+                  alignItems: "center",
                 }}
 
                 onClick={() => this.setState({closed: true})}
               >
                 <div
                   style={{
-                    position: "relative",
-                    left: "50%", top: "50%",
-                    transform: "translate( -50%, calc( -50% - 0.5px ) )",
+                    margin: "0 auto",
                     width: "90%",
                     height: "90%",
-                    backgroundColor: "white"
+                    backgroundColor: "white",
                   }}
                 >
                   <TitleH2>
