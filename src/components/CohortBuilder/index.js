@@ -14,8 +14,8 @@ import Results from './Results';
 import SqonBuilder from './SqonBuilder';
 import SQONProvider from './SQONProvider';
 import VirtualStudiesMenu from './VirtualStudiesMenu';
-import PromptMessage from 'uikit/PromptMessage';
 import ParticipantIcon from 'icons/ParticipantIcon';
+import PromptMessage from 'uikit/PromptMessage';
 
 const Container = styled('div')`
   width: 100%;
@@ -133,7 +133,11 @@ const CohortBuilder = compose(
             <Content>
               <Categories sqon={executableSqon} onSqonUpdate={categoriesSqonUpdate} />
             </Content>
-            <SqonBuilderContainer>
+            <SqonBuilderContainer css={`
+            .sqonView {
+              margin-right: 60px;
+            }
+            `}>
               <SqonBuilder
                 syntheticSqons={syntheticSqons}
                 activeSqonIndex={activeSqonIndex}
@@ -142,10 +146,9 @@ const CohortBuilder = compose(
                 emptyEntryMessage="Use the filters above to build a query"
                 ResultCountIcon={ParticipantIcon}
                 resultCountIconProps={{
-                  height: 14,
-                  width: 14,
+                  height: 18,
+                  width: 18,
                   fill: theme.greyScale11,
-                  // fill: 'currentColor',
                 }}
               />
             </SqonBuilderContainer>

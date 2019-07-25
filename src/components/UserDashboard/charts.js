@@ -8,13 +8,16 @@ import HorizontalBar from 'chartkit/components/HorizontalBar';
 import Donut from 'chartkit/components/Donut';
 import { trackUserInteraction, TRACKING_EVENTS } from 'services/analyticsTracking';
 
-import { setSqons } from 'store/actionCreators/virtualStudies';
+import { resetVirtualStudy, setSqons } from 'store/actionCreators/virtualStudies';
 import { connect } from 'react-redux';
 import {
+  getDefaultSqon,
   setSqonValueAtIndex,
   MERGE_OPERATOR_STRATEGIES,
   MERGE_VALUES_STRATEGIES,
 } from '../../common/sqonUtils';
+import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
 
 const {
   categories: {
@@ -52,24 +55,8 @@ const participantTooltip = data => {
   return `${participants.toLocaleString()} Participant${participants > 1 ? 's' : ''}`;
 };
 
-const sqon = {
-  op: 'and',
-  content: [
-    {
-      op: 'in',
-      content: null,
-    },
-  ],
-};
-
-const SHORT_NAME_FIELD = 'participants.study.short_name';
-const TEXT_DIAGNOSES_FIELD = 'participants.diagnoses.diagnosis';
-
-const getFileRepoURL = (field, value) => {
-  sqon.content[0].content = { field, value };
-  const x = `/search/file?sqon=${encodeURI(JSON.stringify(sqon))}`;
-  return x;
-};
+const SHORT_NAME_FIELD = 'study.short_name';
+const TEXT_DIAGNOSES_FIELD = 'diagnoses.diagnosis';
 
 const trackBarClick = (trackingEventCategory, barData) => {
   trackUserInteraction({
@@ -79,19 +66,18 @@ const trackBarClick = (trackingEventCategory, barData) => {
   });
 };
 
-export const studiesChart = withTheme(({ data, theme, setSqons, virtualStudy }) => {
-  const mergedStudyData = data.map(d => ({
-    ...d,
-    url: getFileRepoURL(SHORT_NAME_FIELD, d.name),
-  }));
-
+export const studiesChart = compose(
+  withRouter,
+  withTheme,
+)(({ data, theme, setSqons, virtualStudy, history }) => {
   const onClick = barData => {
     trackBarClick(studiesChartCategory, barData);
-    addSqon('study.short_name', barData.data.name);
-    window.location.href = '/explore';
+    resetVirtualStudy();
+    generateSqon(SHORT_NAME_FIELD, barData.data.name);
+    history.push('/explore');
   };
 
-  const addSqon = (field, value) => {
+  const generateSqon = (field, value) => {
     const newSqon = {
       op: 'in',
       content: {
@@ -101,12 +87,12 @@ export const studiesChart = withTheme(({ data, theme, setSqons, virtualStudy }) 
     };
 
     const modifiedSqons = setSqonValueAtIndex(
-      virtualStudy.sqons,
-      virtualStudy.activeIndex,
+      getDefaultSqon(),
+      0,
       newSqon,
       {
-        operator: MERGE_OPERATOR_STRATEGIES.KEEP_OPERATOR,
-        values: MERGE_VALUES_STRATEGIES.APPEND_VALUES,
+        operator: MERGE_OPERATOR_STRATEGIES.OVERRIDE_OPERATOR,
+        values: MERGE_VALUES_STRATEGIES.OVERRIDE_VALUES,
       },
     );
     setSqons(modifiedSqons);
@@ -114,7 +100,7 @@ export const studiesChart = withTheme(({ data, theme, setSqons, virtualStudy }) 
 
   return (
     <HorizontalBar
-      data={mergedStudyData}
+      data={data}
       indexBy="label"
       keys={['probands', 'familyMembers']}
       onClick={onClick}
@@ -134,7 +120,7 @@ export const studiesChart = withTheme(({ data, theme, setSqons, virtualStudy }) 
 });
 
 const mapStateToProps = state => ({
-  virtualStudy: state.cohortBuilder,
+  virtualStudy: state.currentVirtualStudy,
 });
 
 const mapDispatchToProps = {
@@ -170,20 +156,42 @@ export const UserInterestsChart = withTheme(({ data, theme }) => {
   );
 });
 
-export const TopDiagnosesChart = withTheme(({ data, theme }) => {
-  const mergedData = data.map(d => ({
-    ...d,
-    url: getFileRepoURL(TEXT_DIAGNOSES_FIELD, d.name),
-  }));
+export const topDiagnoseChart = compose(
+  withRouter,
+  withTheme,
+)(({ data, theme, setSqons, virtualStudy, history }) => {
 
   const onClick = barData => {
     trackBarClick(diagnosesChartCategory, barData);
-    window.location.href = barData.data.url;
+    resetVirtualStudy();
+    generateSqon(TEXT_DIAGNOSES_FIELD, barData.data.name);
+    history.push('/explore');
+  };
+
+  const generateSqon = (field, value) => {
+    const newSqon = {
+      op: 'in',
+      content: {
+        field,
+        value: [value],
+      },
+    };
+
+    const modifiedSqons = setSqonValueAtIndex(
+      getDefaultSqon(),
+      0,
+      newSqon,
+      {
+        operator: MERGE_OPERATOR_STRATEGIES.OVERRIDE_OPERATOR,
+        values: MERGE_VALUES_STRATEGIES.OVERRIDE_VALUES,
+      },
+    );
+    setSqons(modifiedSqons);
   };
 
   return (
     <HorizontalBar
-      data={mergedData}
+      data={data}
       indexBy="label"
       keys={['probands', 'familyMembers']}
       onClick={onClick}
@@ -201,3 +209,8 @@ export const TopDiagnosesChart = withTheme(({ data, theme }) => {
     />
   );
 });
+
+export const TopDiagnosesChart = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(topDiagnoseChart);
