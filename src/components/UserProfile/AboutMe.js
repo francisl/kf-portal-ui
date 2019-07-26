@@ -5,7 +5,7 @@ import { Tag } from '../../uikit/Tags';
 const AboutMe = ({profile, Gate}) => {
 
   return (
-    <div style={{marginTop: "2em", margin: "0 auto", width: "76%", maxWidth: "1400px", display: "grid", gridTemplateColumns: "65% auto", gridGap: "2em"}}>
+    <div style={{display: "grid", gridTemplateColumns: "65% auto", gridGap: "2em"}}>
       <Gate fields={["bio", "story"]} title={"Profile"} Cell={ (f) => <div><div>My {f}</div><div>{profile.f}</div></div>}/>
       <Gate
         fields={["interests"]}

@@ -15,7 +15,8 @@ import ParticipantClinical from './ParticipantClinical';
 
 import { fetchParticipant } from './actionCreators';
 import Spinner from 'react-spinkit';
-import ParticipantActionBar from './Utils/ParticipantActionBar';
+import EntityActionBar from '../EntityActionBar';
+import EntityContainer from '../EntityContainer';
 
 const Container = styled(Column)`
   flex-direction: column;
@@ -91,7 +92,7 @@ class ParticipantEntity extends React.Component {
     }
 
     return (
-      <Container>
+      <EntityContainer>
         <EntityTitleBar>
           <EntityTitle
             icon="participant"
@@ -99,13 +100,13 @@ class ParticipantEntity extends React.Component {
             tags={isLoading ? [] : getTags(participant)}
           />
         </EntityTitleBar>
-        <ParticipantActionBar style={{ backgroundColor: 'red' }}>
+        <EntityActionBar>
           <SecondaryNavMenu
             tabs={[{ name: 'Summary', hash: 'summary' }, { name: 'Clinical', hash: 'clinical' }]}
             defaultHash="summary"
             location={location}
           />
-        </ParticipantActionBar>
+        </EntityActionBar>
         <EntityContent>
           <SecondaryNavContent target="summary" location={location}>
             <ParticipantSummary participant={participant} />
@@ -114,7 +115,7 @@ class ParticipantEntity extends React.Component {
             <ParticipantClinical participant={participant} />
           </SecondaryNavContent>
         </EntityContent>
-      </Container>
+      </EntityContainer>
     );
   }
 }

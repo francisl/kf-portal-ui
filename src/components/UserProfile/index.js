@@ -14,6 +14,8 @@ import SecondaryNavMenu from '../../uikit/SecondaryNav/SecondaryNavMenu';
 import SecondaryNavContent from '../../uikit/SecondaryNav/SecondaryNavContent';
 import MemberActionBar from './ui/MemberActionBar';
 import makeGate from './Utils/makeGate';
+import EntityContainer from '../EntityPage/EntityContainer';
+import EntityActionBar from '../EntityPage/EntityActionBar';
 
 
 export const userProfileBackground = (
@@ -73,18 +75,19 @@ export default class UserProfile extends React.Component {
       return <Error text={"404: Page not found."}/>;
     }
 
+    console.log(profile)
+
     const Gate = makeGate(profile, canEdit); //TODO put editButton inside Gate if possible
 
+
+
     return (
-      <div
-        className={css`
-        flex: 1;
-      `}
-      >
+      <EntityContainer>
         <div
           className={css`
           ${userProfileBackground(profile)};
           min-height: 330px;
+          width: 100%;
           align-items: center;
           display: flex;
           justify-content: center;
@@ -96,7 +99,7 @@ export default class UserProfile extends React.Component {
               <RoleIconButton/>
               <Gate
                 style={{color: 'rgb(255, 255, 255)'}}
-                fields={["firstName lastName", "jobTitle", "institution", "department", "city state country"]}
+                fields={["role", "firstName lastName", "jobTitle", "institution", "department", "city state country"]}
                 Cells={
                   {
                     "firstName lastName": () => <h1 style={{fontWeight: '500',
@@ -111,12 +114,15 @@ export default class UserProfile extends React.Component {
                     "city state country": () => <div style={{marginTop: "1em"}}>{[profile.city, profile.state, profile.country].filter(Boolean).join(', ')}</div>
                   }
                 }
+                editorCells={{
+                  "city state country": () =>
+                }}
               />
             </div>
           </div>
 
         </div>
-        <MemberActionBar>
+        <EntityActionBar>
           <SecondaryNavMenu
             tabs={[
               { name: 'About Me', hash: 'aboutMe' },
@@ -125,22 +131,22 @@ export default class UserProfile extends React.Component {
             defaultHash="aboutMe"
             location={location}
           />
-        </MemberActionBar>
+        </EntityActionBar>
         {
           canEdit
             ? (
-              <EntityContent>
-              <SecondaryNavContent target="aboutMe" location={location}>
-                <AboutMe profile={profile} Gate={Gate} />
-              </SecondaryNavContent>
-              <SecondaryNavContent target="settings" location={location}>
-                <div></div>
-              </SecondaryNavContent>
-            </EntityContent>
+              <EntityContent style={{backgroundColor: "red"}}>
+                <SecondaryNavContent target="aboutMe" location={location}>
+                  <AboutMe profile={profile} Gate={Gate} />
+                </SecondaryNavContent>
+                <SecondaryNavContent target="settings" location={location}>
+                  <div></div>
+                </SecondaryNavContent>
+              </EntityContent>
             )
             : <div/>
         }
-      </div>
+      </EntityContainer>
     )
   }
 }
