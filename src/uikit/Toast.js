@@ -74,7 +74,7 @@ let pageload = false;
 
 const enhance = compose(
   withTheme,
-  withState('visible', 'setState', false),
+  withState('visible', 'updateState', false),
   shouldUpdate((props, nextProps) => {
     // Do not render on the first prop update, such as store rehydration
     if (pageload) {
@@ -93,13 +93,13 @@ const enhance = compose(
 
     function startTimer() {
       timeoutId = setTimeout(() => {
-        props.setState(() => false);
+        props.updateState(() => false);
       }, nextProps.delay || 5000);
     }
 
     // If the notification is not up, pop it up and begin the removal timeout
     if (!props.visible && !nextProps.visible) {
-      props.setState(() => true);
+      props.updateState(() => true);
       if (!nextProps.delay || nextProps.delay > 0) {
         startTimer();
       }

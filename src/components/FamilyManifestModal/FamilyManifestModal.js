@@ -140,7 +140,7 @@ export default compose(
         api: this.props.api,
         sqon: this.props.sqon,
       }).then(x =>
-        this.setState({
+        this.updateState({
           ...x,
           loading: false,
         }),

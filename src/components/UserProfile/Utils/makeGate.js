@@ -24,7 +24,7 @@ function isEmpty(val) {
   else return false;
 }
 
-const makeGate = (profile, canEdit) => ({fields, title, filter=false, Cell = (f) => <div style={{marginTop: "1em"}}>{profile[f]}</div>, Cells = {}, style={}}) => {
+const makeGate = (profile, canEdit) => ({fields, title, Cell = (f) => <div style={{marginTop: "1em"}}>{profile[f]}</div>, Cells = {}, style={}, editorCells={}}) => {
   fields = fields.filter( f => {
     if(f.includes(" ")) return true;
     else return !filters[profile.roles[0]].includes(f)
@@ -33,7 +33,7 @@ const makeGate = (profile, canEdit) => ({fields, title, filter=false, Cell = (f)
   const display = fields.map( f => isEmpty(profile[f]) ? "" : f in Cells ? Cells[f]() : Cell(f));
 
   const EditButton = canEdit  // EditButton is either empty string or an actual edit button depending on canEdit
-    ? ({fields}) => <Editor profile={profile} fields={fields} title={title}/>
+    ? ({fields}) => <Editor profile={profile} fields={fields} title={title} Cells={editorCells}/>
     : (props) => "";
 
   if(title === "" || title === undefined) return (

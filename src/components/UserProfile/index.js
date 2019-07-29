@@ -16,6 +16,7 @@ import MemberActionBar from './ui/MemberActionBar';
 import makeGate from './Utils/makeGate';
 import EntityContainer from '../EntityPage/EntityContainer';
 import EntityActionBar from '../EntityPage/EntityActionBar';
+import AddressForm from './Utils/AddressForm';
 
 
 export const userProfileBackground = (
@@ -114,9 +115,11 @@ export default class UserProfile extends React.Component {
                     "city state country": () => <div style={{marginTop: "1em"}}>{[profile.city, profile.state, profile.country].filter(Boolean).join(', ')}</div>
                   }
                 }
-                editorCells={{
-                  "city state country": () =>
-                }}
+                editorCells={
+                  {
+                    "city state country": (profile) => <AddressForm profile={profile}/>
+                  }
+                }
               />
             </div>
           </div>

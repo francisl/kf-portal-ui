@@ -19,7 +19,7 @@ export const Container = styled('div')`
   // background: ${({ theme }) => theme.backgroundGrey};
 `;
 
-//needs to be a class to use setState to do the hovering. Would do in CSS, but with emotion it's too complicated and hacky
+//needs to be a class to use updateState to do the hovering. Would do in CSS, but with emotion it's too complicated and hacky
 class TabButton extends React.Component {
   constructor(props) {
     super(props);

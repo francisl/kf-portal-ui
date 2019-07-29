@@ -33,7 +33,7 @@ class Multicard extends Component {
   }
 
   setIndex(i) {
-    //this.setState({ currentTabIndex: i });
+    //this.updateState({ currentTabIndex: i });
     this.slider.slickGoTo(i);
   }
 

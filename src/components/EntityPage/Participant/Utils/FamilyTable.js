@@ -5,7 +5,7 @@ import sanitize from './sanitize';
 import ParticipantDataTable from './ParticipantDataTable';
 
 /*
-Needs to be a class: we're using setState to display the table after the calls to graphql are done to populate the rows
+Needs to be a class: we're using updateState to display the table after the calls to graphql are done to populate the rows
  */
 class FamilyTable extends React.Component {
   constructor(props) {

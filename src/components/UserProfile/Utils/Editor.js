@@ -6,6 +6,7 @@ import { Field } from 'formik';
 import { space, width } from 'styled-system';
 import TitleH2 from './TitleH2';
 import { toSpaceCase, joinWithLast } from './toSpaceCase';
+import cloneDeep from "lodash/cloneDeep"
 
 const StyledLabel = styled('label')`
   font-size: 14px;
@@ -81,24 +82,46 @@ const fieldStyle = {
   writingMode: 'horizontal-tb',
 };
 
+const EditorInput = (props) => {
+  const propsCopy = {...props};
+  propsCopy.style = props.style === undefined ? fieldStyle : {...props.style, ...fieldStyle};
+  //TODO propsCopy.onChange = (e) => props.profile.field = whatever;
+
+  return <input type={"text"} {...propsCopy}/>;
+};
+
+const LabelInput = (props) => (
+  <div style={{boxSizing: "border-box"}}>
+    <StyledLabel style={{textTransform: "capitalize"}}>{props.label}:</StyledLabel>
+    <EditorInput {...props}/>
+  </div>
+);
+
+export {LabelInput};
+
+const FieldContainer = (props) => (
+  <div style={{display: 'grid', gridTemplateColumns: "1fr 1fr", gridGap: "1em", backgroundColor: "rgb(237, 238, 241)", padding: "0.5em"}}>
+    {props.children}
+  </div>
+);
+
+export {FieldContainer};
 
 export default class Editor extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {closed: true};
+    this.cancel = () => this.setState({closed: true});
   }
 
   render() {
-    const profile = this.props.profile;
+    const profileCopy = cloneDeep(this.props.profile);  //local copy of the profile. Used when editing, and will overwrite the profile on save
 
-    const fields = this.props.fields;
+    const predefCells = this.props.Cells;
+    const cellKeys = Object.keys(predefCells);
 
-    const LabelInput = ({field}) =>
-      <div style={{width: "50%", boxSizing: "border-box"}}>
-        <StyledLabel style={{textTransform: "capitalize"}}>{field}:</StyledLabel>
-        <input style={fieldStyle} name={field} value={profile[field]}/>
-      </div>;
+    const fields = [...this.props.fields].filter(f => !cellKeys.includes(f));
 
     return (
       <div>
@@ -122,7 +145,7 @@ export default class Editor extends React.Component {
                   alignItems: "center",
                 }}
 
-                onClick={() => this.setState({closed: true})}
+                onClick={this.cancel}
               >
                 <div
                   style={{
@@ -133,6 +156,8 @@ export default class Editor extends React.Component {
                     borderRadius: "4px",
                     border: "1px solid rgb(202, 203, 207)"
                   }}
+
+                  onClick={(event) => event.stopPropagation()}  //cancel parent's onClick
                 >
                   <TitleH2>
                     {(() => {
@@ -145,21 +170,14 @@ export default class Editor extends React.Component {
                   <div style={{display: "grid", gridTemplateColumns: "1fr", gridGap: "2em"}}>
                     {
                       fields.map( field =>
-                        <div style={{display: 'grid', gridTemplateColumns: "1fr 1fr", gridGap: "1em", backgroundColor: "rgb(237, 238, 241)", padding: "0.5em"}}>
-                          {
-                            field.split(" ").map( f =>
-                              <div style={{boxSizing: "border-box"}}>
-                                <StyledLabel style={{textTransform: "capitalize"}}>{toSpaceCase(f)}</StyledLabel>
-                                <input style={fieldStyle} name={f} value={profile[f]}/>
-                              </div>
-                            )
-                          }
-                        </div>
-                      )
+                        <FieldContainer>
+                          {field.split(" ").map( f => <LabelInput value={profileCopy[f]} label={toSpaceCase(f)}/>)}
+                        </FieldContainer>
+                      ).concat(cellKeys.map(k => predefCells[k](profileCopy)))
                     }
                   </div>
                   <div style={{width: "100%", display: 'flex', justifyContent: "space-between", paddingTop: "2em"}}>
-                    <WhiteButton onClick={() => ""}>Cancel</WhiteButton>
+                    <WhiteButton onClick={this.cancel}>Cancel</WhiteButton>
                     <TealActionButton onClick={() => ""}>Save</TealActionButton>
                   </div>
                 </div>
