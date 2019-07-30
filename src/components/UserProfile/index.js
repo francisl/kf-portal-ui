@@ -17,6 +17,12 @@ import makeGate from './Utils/makeGate';
 import EntityContainer from '../EntityPage/EntityContainer';
 import EntityActionBar from '../EntityPage/EntityActionBar';
 import AddressForm from './Utils/AddressForm';
+import { FieldContainer, LabelSelect } from './Utils/Editor';
+import toCamelCSS from './Utils/toCamelCSS';
+import { WhiteButton } from '../../uikit/Button';
+import ExternalLink from '../../uikit/ExternalLink';
+import InterestsAutocomplete, { InterestsAutocomplete2 } from './InterestsAutocomplete';
+import ResearchInterests from './ResearchInterests';
 
 
 export const userProfileBackground = (
@@ -80,8 +86,6 @@ export default class UserProfile extends React.Component {
 
     const Gate = makeGate(profile, canEdit); //TODO put editButton inside Gate if possible
 
-
-
     return (
       <EntityContainer>
         <div
@@ -117,7 +121,33 @@ export default class UserProfile extends React.Component {
                 }
                 editorCells={
                   {
-                    "city state country": (profile) => <AddressForm profile={profile}/>
+                    "city state country": (profile) => <AddressForm profile={profile}/>,
+                    "title": (profile) => (
+                      <FieldContainer>
+                        <LabelSelect label={"Title"}>
+                          <option value="" selected disabled hidden>
+                            -- select an option --
+                          </option>
+                          <option value="">N/A</option>
+                          <option value="mr">Mr.</option>
+                          <option value="ms">Ms.</option>
+                          <option value="mrs">Mrs.</option>
+                          <option value="dr">Dr.</option>
+                        </LabelSelect>
+                      </FieldContainer>
+                    ),
+                    "gravatar": (profile) => (
+                      <div>
+                        <div>
+                          <ProfileImage style={{flex: "none"}} email={profile.email || ''} />
+                          <WhiteButton mt="4px" w="170px">
+                            <ExternalLink href="https://en.gravatar.com/site/login">change gravatar</ExternalLink>
+                          </WhiteButton>
+                        </div>
+                      </div>
+                    )
+
+
                   }
                 }
               />

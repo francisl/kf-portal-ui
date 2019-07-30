@@ -12,6 +12,9 @@ import { getTags } from 'services/profiles';
 import SearchIcon from '../../icons/SearchIcon';
 import { Box } from 'uikit/Core';
 import { FilterInput } from '../../uikit/Input';
+import { LabelSelect } from './Utils/Editor';
+
+import { DISEASE_AREAS, STUDY_SHORT_NAMES } from 'common/constants';
 
 const InterestsAutocompleteContainer = styled('div')`
   width: 100%;
@@ -73,6 +76,39 @@ const SearchIconInterests = styled(SearchIcon)`
   left: 8px;
 `;
 
+export class InterestsAutocomplete2 extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {suggestions: []}
+    this.getSuggestions("")
+  }
+
+  async getSuggestions(filter) {
+    const suggestions = await getTags(this.props.api)({ filter, size: 5 });
+    console.log(suggestions);
+    console.log(this.props.profile.interests);
+    const loweredSuggestions = [...new Set(suggestions.values.map(x => x.value.toLowerCase()))];
+
+    console.log({suggestions: difference(loweredSuggestions, this.props.profile.interests)})
+
+    this.setState({suggestions: difference(loweredSuggestions, this.props.profile.interests)});
+  }
+
+  render() {
+
+    const suggestions = this.state.suggestions;
+
+    const interests = this.props.profile.interests;
+
+    return <LabelSelect>{DISEASE_AREAS.filter(area => !interests.includes(area.toLowerCase())).map(area => (
+      <option value={area} key={area}>
+        {area}
+      </option>
+    ))}</LabelSelect>
+  }
+}
+
 const InterestsAutocomplete = compose(
   withApi,
   withState('inputValue', 'setInputValue', ''),
@@ -119,6 +155,7 @@ const InterestsAutocomplete = compose(
         initMenu = async () => {
           if (!isOpen) {
             await getSuggestions(inputValue);
+            console.log(inputValue);
             openMenu();
           }
         },

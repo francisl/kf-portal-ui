@@ -233,11 +233,11 @@ export default class AddressForm extends React.Component {
         </WrappedPlacesAutocomplete>
         <FieldContainer>
           <LabelInput label={"Address Line 1"} value={this.state.addressLine1}/>
-          <LabelInput label={"Address Line 1"} value={this.state.addressLine2}/>
-          <LabelInput label={"Address Line 1"} value={this.state.city}/>
-          <LabelInput label={"Address Line 1"} value={this.state.state}/>
-          <LabelInput label={"Address Line 1"} value={this.state.zip}/>
-          <LabelInput label={"Address Line 1"} value={this.state.country}/>
+          <LabelInput label={"Address Line 2"} value={this.state.addressLine2}/>
+          <LabelInput label={"City"} value={this.state.city}/>
+          <LabelInput label={"State"} value={this.state.state}/>
+          <LabelInput label={"ZIP Code"} value={this.state.zip}/>
+          <LabelInput label={"Country"} value={this.state.country}/>
         </FieldContainer>
       </div>
 

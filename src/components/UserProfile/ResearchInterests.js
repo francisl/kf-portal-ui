@@ -131,7 +131,7 @@ export default compose(
           ))}
       </CardHeader>
 
-      <PrivacyWrap accessor={"interests"} profile={profile} editing={editingResearchInterests}>
+      <div accessor={"interests"} profile={profile} editing={editingResearchInterests}>
         <div>
           {canEdit &&
           !interests.length &&
@@ -206,7 +206,7 @@ export default compose(
             </React.Fragment>
           )}
         </div>
-      </PrivacyWrap>
+      </div>
 
     </InterestsCard>
   ),

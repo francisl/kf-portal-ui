@@ -7,6 +7,7 @@ import { space, width } from 'styled-system';
 import TitleH2 from './TitleH2';
 import { toSpaceCase, joinWithLast } from './toSpaceCase';
 import cloneDeep from "lodash/cloneDeep"
+import { omit } from 'lodash/object';
 
 const StyledLabel = styled('label')`
   font-size: 14px;
@@ -82,13 +83,160 @@ const fieldStyle = {
   writingMode: 'horizontal-tb',
 };
 
-const EditorInput = (props) => {
-  const propsCopy = {...props};
-  propsCopy.style = props.style === undefined ? fieldStyle : {...props.style, ...fieldStyle};
-  //TODO propsCopy.onChange = (e) => props.profile.field = whatever;
-
-  return <input type={"text"} {...propsCopy}/>;
+const selectStyle = {
+  alignItems: 'center',
+  backgroundAttachment: 'scroll',
+  backgroundClip: 'border-box',
+  backgroundColor: 'rgb(255, 255, 255)',
+  backgroundOrigin: 'padding-box',
+  backgroundPositionX: '100%',
+  backgroundPositionY: '50%',
+  backgroundRepeatX: '',
+  backgroundRepeatY: '',
+  backgroundSize: 'auto',
+  borderBottomColor: 'rgb(212, 214, 221)',
+  borderBottomLeftRadius: '10px',
+  borderBottomRightRadius: '10px',
+  borderBottomStyle: 'solid',
+  borderBottomWidth: '1px',
+  borderImageOutset: '0px',
+  borderImageRepeat: 'stretch',
+  borderImageSlice: '100%',
+  borderImageSource: 'none',
+  borderImageWidth: '1',
+  borderLeftColor: 'rgb(212, 214, 221)',
+  borderLeftStyle: 'solid',
+  borderLeftWidth: '1px',
+  borderRightColor: 'rgb(212, 214, 221)',
+  borderRightStyle: 'solid',
+  borderRightWidth: '1px',
+  borderTopColor: 'rgb(212, 214, 221)',
+  borderTopLeftRadius: '10px',
+  borderTopRightRadius: '10px',
+  borderTopStyle: 'solid',
+  borderTopWidth: '1px',
+  boxShadow: 'none',
+  boxSizing: 'border-box',
+  color: 'rgb(0, 0, 0)',
+  cursor: 'default',
+  display: 'block',
+  fontFamily: 'Arial',
+  fontSize: '14px',
+  fontStretch: '100%',
+  fontStyle: 'normal',
+  fontVariantCaps: 'normal',
+  fontVariantEastAsian: 'normal',
+  fontVariantLigatures: 'normal',
+  fontVariantNumeric: 'normal',
+  fontWeight: '400',
+  letterSpacing: 'normal',
+  lineHeight: '20px',
+  marginBottom: '0px',
+  marginLeft: '0px',
+  marginRight: '0px',
+  marginTop: '0px',
+  outlineColor: 'rgb(0, 0, 0)',
+  outlineStyle: 'none',
+  outlineWidth: '0px',
+  paddingBottom: '7px',
+  paddingLeft: '7px',
+  paddingRight: '21px',
+  paddingTop: '7px',
+  textAlign: 'start',
+  textIndent: '0px',
+  textRendering: 'auto',
+  textShadow: 'none',
+  textTransform: 'capitalize',
+  whiteSpace: 'pre',
+  wordSpacing: '0px',
+  writingMode: 'horizontal-tb',
+  WebkitAppearance: 'none',
+  WebkitRtlOrdering: 'logical',
+  WebkitBorderImage: 'none'
 };
+
+const areaStyle = {
+  display: "block",
+  backgroundColor: 'rgb(255, 255, 255)',
+  borderBottomColor: 'rgb(202, 203, 207)',
+  borderBottomLeftRadius: '10px',
+  borderBottomRightRadius: '10px',
+  borderBottomStyle: 'solid',
+  borderBottomWidth: '1px',
+  borderImageOutset: '0px',
+  borderImageRepeat: 'stretch',
+  borderImageSlice: '100%',
+  borderImageSource: 'none',
+  borderImageWidth: '1',
+  borderLeftColor: 'rgb(202, 203, 207)',
+  borderLeftStyle: 'solid',
+  borderLeftWidth: '1px',
+  borderRightColor: 'rgb(202, 203, 207)',
+  borderRightStyle: 'solid',
+  borderRightWidth: '1px',
+  borderTopColor: 'rgb(202, 203, 207)',
+  borderTopLeftRadius: '10px',
+  borderTopRightRadius: '10px',
+  borderTopStyle: 'solid',
+  borderTopWidth: '1px',
+  boxSizing: 'border-box',
+  color: 'rgb(0, 0, 0)',
+  cursor: 'text',
+  flexDirection: 'column',
+  fontFamily: 'Montserrat, sans-serif, sans-serif',
+  fontSize: '14px',
+  fontStretch: '100%',
+  fontStyle: 'normal',
+  fontVariantCaps: 'normal',
+  fontVariantEastAsian: 'normal',
+  fontVariantLigatures: 'normal',
+  fontVariantNumeric: 'normal',
+  fontWeight: '400',
+  letterSpacing: 'normal',
+  lineHeight: 'normal',
+  marginBottom: '0px',
+  marginLeft: '0px',
+  marginRight: '0px',
+  marginTop: '0px',
+  minHeight: '144px',
+  outlineColor: 'rgb(0, 0, 0)',
+  outlineStyle: 'none',
+  outlineWidth: '0px',
+  overflowWrap: 'break-word',
+  paddingBottom: '2px',
+  paddingLeft: '2px',
+  paddingRight: '2px',
+  paddingTop: '2px',
+  resize: 'none',
+  textAlign: 'start',
+  textIndent: '0px',
+  textRendering: 'auto',
+  textShadow: 'none',
+  textTransform: 'none',
+  transitionDelay: '0s',
+  transitionDuration: '0.2s',
+  transitionProperty: 'all',
+  transitionTimingFunction: 'ease',
+  whiteSpace: 'pre-wrap',
+  width: '100%',
+  wordSpacing: '0px',
+  writingMode: 'horizontal-tb',
+  WebkitAppearance: 'none',
+  WebkitRtlOrdering: 'logical',
+  WebkitBorderImage: 'none'
+};
+
+function override(obj, newField) {
+  const newFields = Array.isArray(newField) ? newField : [newField];
+
+  const temp = omit(obj, newFields.map(f => Object.keys(f)));
+  newFields.forEach(f => temp[Object.keys(f)] = f[Object.keys(f)[0]]);
+
+  console.log(temp)
+  return temp;
+}
+
+const EditorInput = (props) => <input type={"text"} {...override(props, {style: fieldStyle})}/>
 
 const LabelInput = (props) => (
   <div style={{boxSizing: "border-box"}}>
@@ -98,6 +246,24 @@ const LabelInput = (props) => (
 );
 
 export {LabelInput};
+
+const LabelSelect = (props) => (
+  <div style={{boxSizing: "border-box"}}>
+    <StyledLabel style={{textTransform: "capitalize"}}>{props.label}:</StyledLabel>
+    <select {...override(props, {style: selectStyle})}/>
+  </div>
+);
+
+export {LabelSelect};
+
+const LabelTextArea = (props) => (
+  <div style={{boxSizing: "border-box"}}>
+    <StyledLabel style={{textTransform: "capitalize"}}>{props.label}:</StyledLabel>
+    <textarea {...override(props, {style: areaStyle})}></textarea>
+  </div>
+);
+
+export {LabelTextArea};
 
 const FieldContainer = (props) => (
   <div style={{display: 'grid', gridTemplateColumns: "1fr 1fr", gridGap: "1em", backgroundColor: "rgb(237, 238, 241)", padding: "0.5em"}}>
@@ -152,9 +318,12 @@ export default class Editor extends React.Component {
                     margin: "0 auto",
                     backgroundColor: "white",
                     width: "90%",
+                    maxHeight: "90%",
                     padding: "2em",
                     borderRadius: "4px",
-                    border: "1px solid rgb(202, 203, 207)"
+                    border: "1px solid rgb(202, 203, 207)",
+                    position: "relative",
+                    overflowY: "auto",
                   }}
 
                   onClick={(event) => event.stopPropagation()}  //cancel parent's onClick

@@ -34,7 +34,7 @@ const makeGate = (profile, canEdit) => ({fields, title, Cell = (f) => <div style
 
   const EditButton = canEdit  // EditButton is either empty string or an actual edit button depending on canEdit
     ? ({fields}) => <Editor profile={profile} fields={fields} title={title} Cells={editorCells}/>
-    : (props) => "";
+    : (props) => null;
 
   if(title === "" || title === undefined) return (
     <div style={{...style, ...flexStyle}}>
