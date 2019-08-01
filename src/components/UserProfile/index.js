@@ -103,7 +103,7 @@ export default class UserProfile extends React.Component {
               <RoleIconButton/>
               <Gate
                 style={{color: 'rgb(255, 255, 255)'}}
-                fields={["role", "firstName lastName", "jobTitle", "institution", "department", "city state country"]}
+                fields={["firstName lastName", "jobTitle", "institution", "department", "city state country"]}
                 Cells={
                   {
                     "firstName lastName": () => <h1 style={{fontWeight: '500',
@@ -129,12 +129,22 @@ export default class UserProfile extends React.Component {
                             <ExternalLink href="https://en.gravatar.com/site/login">change gravatar</ExternalLink>
                           </WhiteButton>
                         </div>
-                        <LabelSelect label={"Title"}>
+                        <LabelSelect value={profile.title} field={"title"} profile={profile} label={"Title"}>
                           <option value="">N/A</option>
                           <option value="mr">Mr.</option>
                           <option value="ms">Ms.</option>
                           <option value="mrs">Mrs.</option>
                           <option value="dr">Dr.</option>
+                        </LabelSelect>
+                      </FieldContainer>
+                    ),
+                    role: (profile) => (
+                      <FieldContainer>
+                        <LabelSelect field={"roles"} value={profile.roles} profile={profile} label={"Role"}>
+                          <option value="research">Researcher</option>
+                          <option value="community">Community Member</option>
+                          <option value="health">Healthcare Professional</option>
+                          <option value="patient">Patient/Family Member</option>
                         </LabelSelect>
                       </FieldContainer>
                     )

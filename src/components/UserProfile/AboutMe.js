@@ -59,9 +59,9 @@ const AboutMe = ({profile, Gate, api}) => {
               <ContactContainer>
                 <MapMarkerIcon height={'17px'} />
                 <div>
-                  <div style={{lineHeight: "25.62px"}}>{[profile.addressLine1, profile.addressLine2].join(", ")}</div>
-                  <div style={{lineHeight: "25.62px"}}>{[profile.city, profile.state, profile.country].filter(Boolean).join(', ')}</div>
-                  <div style={{lineHeight: "25.62px"}}>{profile.zip}</div>
+                  <div style={{lineHeight: "25.62px"}}>{[profile.addressLine1, profile.addressLine2].filter(ele => !!ele).join(", ")}</div>
+                  <div style={{lineHeight: "25.62px"}}>{[profile.city, profile.state, profile.country].filter(ele => !!ele).join(', ')}</div>
+                  {profile.zip && <div style={{lineHeight: "25.62px"}}>{profile.zip}</div>}
                 </div>
               </ContactContainer>
             ),

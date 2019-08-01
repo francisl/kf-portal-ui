@@ -236,36 +236,50 @@ export class LabelInput extends React.Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(e) {
-    if(this.props.field) this.props.profile[this.props.field] = e.target.value;
-    this.setState({value: e.target.value})
+  componentWillReceiveProps(nextProps, nextContext) {
+    this.handleChange(nextProps.value);
+  }
+
+  handleChange(v) {
+    if(this.props.field) this.props.profile[this.props.field] = v;
+    this.setState({value: v})
   }
 
   render() {
     return (
       <LabelEdit label={this.props.label}>
-        <input
-          type={"text"}
-          {...override(this.props, [
-            {style: fieldStyle},
-            {onChange: this.handleChange },
-            {value: this.state.value}
-            ])
-          }
-        />
+        <input type={"text"}  onChange={(e) => this.handleChange(e.target.value)} {...override(this.props, [{style: fieldStyle}, {value: this.state.value}])}/>
       </LabelEdit>
     );
   }
 }
 
+export class LabelSelect extends React.Component {
+  constructor(props) {
+    super(props);
 
-const LabelSelect = (props) => (
-  <LabelEdit label={props.label}>
-    <select {...override(props, {style: selectStyle})}/>
-  </LabelEdit>
-);
+    this.state = {value: props.value};
+    this.handleChange = this.handleChange.bind(this);
+    this.originalChange = this.originalChange.bind(this);
+  }
 
-export {LabelSelect};
+  handleChange(e) {
+    if(this.props.field) this.props.profile[this.props.field] = e.target.value;
+    this.setState({value: e.target.value})
+  }
+
+  originalChange(e) {
+    if(this.props.onChange) this.props.onChange(e);
+  }
+
+  render() {
+    return (
+      <LabelEdit label={this.props.label}>
+        <select {...override(this.props, [{style: {...this.props.style, ...selectStyle}}, {onChange: (e) => {this.originalChange(e); this.handleChange(e);}}, {value: this.state.value}])}/>
+      </LabelEdit>
+    );
+  }
+}
 
 const LabelTextArea = (props) => (
   <LabelEdit label={props.label}>
@@ -298,10 +312,16 @@ export class SuggestionItem extends React.Component {
   }
 
   render() {
-    const hoverStyle = this.state.hovered ? {backgroundColor: "lightgray"} : {backgroundColor: "white"};
+    const style = {
+      backgroundColor: this.state.hovered ? "lightgray" : "white",
+      border: "thin solid rgb(202, 203, 207)",
+      borderRadius: "1em",
+      display: "inline-block",
+      padding: "0.5em"
+    };
 
     return (
-      <div {...override(this.props, hoverStyle)}>
+      <div {...override(this.props, [{style: style}, {onMouseEnter: () => this.setState({hovered: true})}, {onMouseLeave: () => this.setState({hovered: false})}])}>
         <span style={{fontFamily: "Montserrat, sans-serif, sans-serif", fontWeight: "20", lineHeight: "20px", fontSize: "20px"}}>{this.props.description}</span>
       </div>
     )
@@ -373,11 +393,13 @@ export default class Editor extends React.Component {
                   </TitleH2>
                   <div style={{display: "grid", gridTemplateColumns: "1fr", gridGap: "2em"}}>
                     {
-                      fields.map( field =>
-                        <FieldContainer>
-                          {field.split(" ").map( f => <LabelInput field={f} profile={profileCopy} value={profileCopy[f]} label={toSpaceCase(f)}/>)}
-                        </FieldContainer>
-                      ).concat(cellKeys.map(k => predefCells[k](profileCopy)))
+                      cellKeys.map(k => predefCells[k](profileCopy)).concat(
+                        fields.map( field =>
+                          <FieldContainer>
+                            {field.split(" ").map( f => <LabelInput field={f} profile={profileCopy} value={profileCopy[f]} label={toSpaceCase(f)}/>)}
+                          </FieldContainer>
+                        )
+                      )
                     }
                   </div>
                   <div style={{width: "100%", display: 'flex', justifyContent: "space-between", paddingTop: "2em"}}>

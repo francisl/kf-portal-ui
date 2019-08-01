@@ -10,14 +10,15 @@ import override from "./override";
 
 const InterestsDisplay = ({profile, onClick=(i)=>null, Cell=(inter)=>inter}) => (
   <Row flexWrap="wrap" pt={2} pb={2}>
-    {profile.interests.map( (inter, i) => <Tag onClick={() => onClick(i)} style={{}}>{Cell(inter)}</Tag>)}
+    {profile.interests.map( (inter) => <Tag onClick={() => onClick(inter)} style={{textTransform: "capitalize"}}>{Cell(inter)}</Tag>)}
   </Row>
 );
 
 export {InterestsDisplay};
 
 const InterestSuggestions = ({label, category, currentInterests, onChange}) => (
-  <LabelSelect onChange={onChange} label={label}>
+  <LabelSelect style={{width: "100%"}} onChange={(e) => onChange(e.target.value)} label={label}>
+    <option value="">--- Choose Interests To Add ---</option>
     {
       category.filter(area => !currentInterests.includes(area.toLowerCase())).map(area => (
         <option value={area} key={area}>
@@ -51,13 +52,13 @@ export class InterestsAutocomplete extends React.Component {
     return (
       <div>
         <LabelInput onChange={(e) => this.getSuggestions(e)} label={"Other interests"}/>
-        <FieldContainer>
+        <div style={{flexDirection: "row", flexWrap: "wrap"}}>
           {
             this.state.suggestions.map(s =>
               <SuggestionItem {...override(this.props, {onClick: (e) => this.props.onClick(s)})} description={s}/>
-              )
+            )
           }
-        </FieldContainer>
+        </div>
       </div>
 
     );
@@ -67,18 +68,22 @@ export class InterestsAutocomplete extends React.Component {
 export default class InterestsForm extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {interests: this.props.profile.interests};
   }
 
   getInterests() {
-    return this.props.profile.interests;
+    return new Set(this.props.profile.interests);
   }
 
+  addInterest(newInterest) {
+    this.props.profile.interests = Array.from(this.getInterests().add(newInterest));
+    this.setState({});  //trigger re-render
+  }
 
-  changeProfileThenState(newInterests) {
-    this.props.profile.interests = newInterests;
-    this.setState({interests: this.props.profile.interests})
+  deleteInterest(delInterest) {
+    const oldSet = this.getInterests();
+    oldSet.delete(delInterest);
+    this.props.profile.interests = Array.from(oldSet);
+    this.setState({});  ////trigger re-render
   }
 
   render() {
@@ -89,11 +94,11 @@ export default class InterestsForm extends React.Component {
         <InterestsDisplay
           profile={profile}
           Cell={(i) => <div style={{display: 'grid', gridAutoFlow: "column", gridGap: "1em"}}><span>{i}</span><span>{"X"}</span></div>}
-          onClick={(i) => this.changeProfileThenState(this.state.interests.length === 1 ? [] : this.state.interests.splice(i, 1))}
+          onClick={(e) => this.deleteInterest(e)}
         />
-        <InterestSuggestions onChange={(e) => this.changeProfileThenState(this.getInterests().concat(e.target.value))} label={"Disease Areas"} category={DISEASE_AREAS} currentInterests={profile.interests}/>
-        <InterestSuggestions onChange={(e) => this.changeProfileThenState(this.getInterests().concat(e.target.value))} label={"Studies"} category={STUDY_SHORT_NAMES} currentInterests={profile.interests}/>
-        <InterestsAutocomplete onClick={(e) => this.changeProfileThenState(this.getInterests().concat(e))} profile={profile} api={this.props.api}/>
+        <InterestSuggestions onChange={(e) => this.addInterest(e)} label={"Disease Areas"} category={DISEASE_AREAS} currentInterests={profile.interests}/>
+        <InterestSuggestions onChange={(e) => this.addInterest(e)} label={"Studies"} category={STUDY_SHORT_NAMES} currentInterests={profile.interests}/>
+        <InterestsAutocomplete onClick={(e) => this.addInterest(e)} profile={profile} api={this.props.api}/>
       </div>
     );
   }

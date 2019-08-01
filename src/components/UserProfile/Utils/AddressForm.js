@@ -101,6 +101,8 @@ export default class AddressForm extends React.Component {
     console.log(this.state)
     console.log(this.state.addressLine1)
 
+    const profile = this.props.profile;
+
     return (
       <div>
         <WrappedPlacesAutocomplete
@@ -127,12 +129,12 @@ export default class AddressForm extends React.Component {
             </div>)}
         </WrappedPlacesAutocomplete>
         <FieldContainer>
-          <LabelInput label={"Address Line 1"} value={this.state.addressLine1}/>
-          <LabelInput label={"Address Line 2"} value={this.state.addressLine2}/>
-          <LabelInput label={"City"} value={this.state.city}/>
-          <LabelInput label={"State"} value={this.state.state}/>
-          <LabelInput label={"ZIP Code"} value={this.state.zip}/>
-          <LabelInput label={"Country"} value={this.state.country}/>
+          <LabelInput profile={profile} field={"addressLine1"} label={"Address Line 1"} value={this.state.addressLine1}/>
+          <LabelInput profile={profile} field={"addressLine2"} label={"Address Line 2"} value={this.state.addressLine2}/>
+          <LabelInput profile={profile} field={"city"} label={"City"} value={this.state.city}/>
+          <LabelInput profile={profile} field={"state"} label={"State"} value={this.state.state}/>
+          <LabelInput profile={profile} field={"zip"} label={"ZIP Code"} value={this.state.zip}/>
+          <LabelInput profile={profile} field={"country"} label={"Country"} value={this.state.country}/>
         </FieldContainer>
       </div>
 
