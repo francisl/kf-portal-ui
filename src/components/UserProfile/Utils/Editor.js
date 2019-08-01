@@ -9,6 +9,8 @@ import { toSpaceCase, joinWithLast } from './toSpaceCase';
 import cloneDeep from "lodash/cloneDeep"
 import { omit } from 'lodash/object';
 
+import override from "./override";
+
 const StyledLabel = styled('label')`
   font-size: 14px;
   letter-spacing: 0.2px;
@@ -226,44 +228,59 @@ const areaStyle = {
   WebkitBorderImage: 'none'
 };
 
-function override(obj, newField) {
-  const newFields = Array.isArray(newField) ? newField : [newField];
+export class LabelInput extends React.Component {
+  constructor(props) {
+    super(props);
 
-  const temp = omit(obj, newFields.map(f => Object.keys(f)));
-  newFields.forEach(f => temp[Object.keys(f)] = f[Object.keys(f)[0]]);
+    this.state = {value: props.value};
+    this.handleChange = this.handleChange.bind(this);
+  }
 
-  console.log(temp)
-  return temp;
+  handleChange(e) {
+    if(this.props.field) this.props.profile[this.props.field] = e.target.value;
+    this.setState({value: e.target.value})
+  }
+
+  render() {
+    return (
+      <LabelEdit label={this.props.label}>
+        <input
+          type={"text"}
+          {...override(this.props, [
+            {style: fieldStyle},
+            {onChange: this.handleChange },
+            {value: this.state.value}
+            ])
+          }
+        />
+      </LabelEdit>
+    );
+  }
 }
 
-const EditorInput = (props) => <input type={"text"} {...override(props, {style: fieldStyle})}/>
-
-const LabelInput = (props) => (
-  <div style={{boxSizing: "border-box"}}>
-    <StyledLabel style={{textTransform: "capitalize"}}>{props.label}:</StyledLabel>
-    <EditorInput {...props}/>
-  </div>
-);
-
-export {LabelInput};
 
 const LabelSelect = (props) => (
-  <div style={{boxSizing: "border-box"}}>
-    <StyledLabel style={{textTransform: "capitalize"}}>{props.label}:</StyledLabel>
+  <LabelEdit label={props.label}>
     <select {...override(props, {style: selectStyle})}/>
-  </div>
+  </LabelEdit>
 );
 
 export {LabelSelect};
 
 const LabelTextArea = (props) => (
-  <div style={{boxSizing: "border-box"}}>
-    <StyledLabel style={{textTransform: "capitalize"}}>{props.label}:</StyledLabel>
+  <LabelEdit label={props.label}>
     <textarea {...override(props, {style: areaStyle})}></textarea>
-  </div>
+  </LabelEdit>
 );
 
 export {LabelTextArea};
+
+const LabelEdit = ({label, children}) => (
+  <div style={{boxSizing: "border-box"}}>
+    <StyledLabel style={{textTransform: "capitalize"}}>{label}:</StyledLabel>
+    {children}
+  </div>
+);
 
 const FieldContainer = (props) => (
   <div style={{display: 'grid', gridTemplateColumns: "1fr 1fr", gridGap: "1em", backgroundColor: "rgb(237, 238, 241)", padding: "0.5em"}}>
@@ -272,6 +289,24 @@ const FieldContainer = (props) => (
 );
 
 export {FieldContainer};
+
+export class SuggestionItem extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {hovered: false};
+  }
+
+  render() {
+    const hoverStyle = this.state.hovered ? {backgroundColor: "lightgray"} : {backgroundColor: "white"};
+
+    return (
+      <div {...override(this.props, hoverStyle)}>
+        <span style={{fontFamily: "Montserrat, sans-serif, sans-serif", fontWeight: "20", lineHeight: "20px", fontSize: "20px"}}>{this.props.description}</span>
+      </div>
+    )
+  }
+}
 
 export default class Editor extends React.Component {
   constructor(props) {
@@ -340,14 +375,14 @@ export default class Editor extends React.Component {
                     {
                       fields.map( field =>
                         <FieldContainer>
-                          {field.split(" ").map( f => <LabelInput value={profileCopy[f]} label={toSpaceCase(f)}/>)}
+                          {field.split(" ").map( f => <LabelInput field={f} profile={profileCopy} value={profileCopy[f]} label={toSpaceCase(f)}/>)}
                         </FieldContainer>
                       ).concat(cellKeys.map(k => predefCells[k](profileCopy)))
                     }
                   </div>
                   <div style={{width: "100%", display: 'flex', justifyContent: "space-between", paddingTop: "2em"}}>
                     <WhiteButton onClick={this.cancel}>Cancel</WhiteButton>
-                    <TealActionButton onClick={() => ""}>Save</TealActionButton>
+                    <TealActionButton onClick={() => this.props.submit(profileCopy)}>Save</TealActionButton>
                   </div>
                 </div>
               </div>

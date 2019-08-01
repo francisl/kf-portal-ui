@@ -35,7 +35,7 @@ const DEFAULT_FIELDS = `
   acceptedKfOptIn
   acceptedNihOptIn
   acceptedDatasetSubscriptionKfOptIn
-  isPublic
+  ${""/*isPublic*/}
   sets {
     name
     size
@@ -176,6 +176,9 @@ export const getTags = api => async ({ filter, size }) => {
       `,
     },
   });
+
+  console.log("with this input, "+filter+", get tags returned this"); console.log(tags)
+
   return tags;
 };
 

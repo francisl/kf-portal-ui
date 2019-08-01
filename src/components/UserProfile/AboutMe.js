@@ -14,33 +14,12 @@ import MapMarkerIcon from '../../icons/MapMarkerIcon';
 import EnvelopeIcon from '../../icons/EnvelopeIcon';
 import PhoneIcon from '../../icons/PhoneIcon';
 import CommunityIcon from '../../icons/CommunityIcon';
-import InterestAutocomplete from './Utils/InterestsAutocomplete';
 
-import { DISEASE_AREAS, STUDY_SHORT_NAMES } from 'common/constants';
-
-const InterestSuggestions = ({category, currentInterests}) => (
-  <LabelSelect>
-    {
-      category.filter(area => !currentInterests.includes(area.toLowerCase())).map(area => (
-        <option value={area} key={area}>
-          {area}
-        </option>
-      ))
-    }
-  </LabelSelect>
-);
-
-const InterestsEditor = ({profile}) => {
-  <div>
-    <InterestSuggestions category={DISEASE_AREAS} currentInterests={profile.interests}/>
-    <InterestSuggestions category={STUDY_SHORT_NAMES} currentInterests={profile.interests}/>
-
-  </div>
-};
+import InterestsForm, { InterestsDisplay } from './Utils/InterestsForm';
 
 const ContactContainer = (props) => <div style={{display: "grid", gridTemplateColumns: "1em auto", gridGap: "1em"}}{...props}/>;
 
-const AboutMe = ({profile, Gate}) => {
+const AboutMe = ({profile, Gate, api}) => {
 
   return (
     <div style={{display: "grid", gridTemplateColumns: "65% auto", gridGap: "2em"}}>
@@ -58,14 +37,10 @@ const AboutMe = ({profile, Gate}) => {
       <Gate
         fields={["interests"]}
         title={"Research Interests"}
-        Cell={ (f) =>
-          <Row flexWrap="wrap" pt={2} pb={2}>
-            {profile[f].map( (inter) => <Tag style={{}}>{inter}</Tag>)}
-          </Row>
-        }
+        Cell={ (f) => <InterestsDisplay profile={profile}/>}
         editorCells={
           {
-            interests: (profile) =>
+            interests: (profile) => <InterestsForm profile={profile} api={api}/>
           }
         }
       />

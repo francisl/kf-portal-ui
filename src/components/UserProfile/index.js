@@ -74,7 +74,6 @@ export default class UserProfile extends React.Component {
     // const values needed to build the page...
     const canEdit = this.props.userID === null;
     const location = this.props.location;
-    const submit = this.submit;
     const {profile} = this.state;
 
     if (profile === null) return <div>Loading...</div>;
@@ -84,7 +83,7 @@ export default class UserProfile extends React.Component {
 
     console.log(profile)
 
-    const Gate = makeGate(profile, canEdit); //TODO put editButton inside Gate if possible
+    const Gate = makeGate(profile, canEdit, this.submit); //TODO put editButton inside Gate if possible
 
     return (
       <EntityContainer>
@@ -122,12 +121,15 @@ export default class UserProfile extends React.Component {
                 editorCells={
                   {
                     "city state country": (profile) => <AddressForm profile={profile}/>,
-                    "title": (profile) => (
+                    "title, gravatar": (profile) => (
                       <FieldContainer>
+                        <div>
+                          <ProfileImage style={{flex: "none"}} email={profile.email || ''} />
+                          <WhiteButton mt="4px" w="170px">
+                            <ExternalLink href="https://en.gravatar.com/site/login">change gravatar</ExternalLink>
+                          </WhiteButton>
+                        </div>
                         <LabelSelect label={"Title"}>
-                          <option value="" selected disabled hidden>
-                            -- select an option --
-                          </option>
                           <option value="">N/A</option>
                           <option value="mr">Mr.</option>
                           <option value="ms">Ms.</option>
@@ -135,19 +137,7 @@ export default class UserProfile extends React.Component {
                           <option value="dr">Dr.</option>
                         </LabelSelect>
                       </FieldContainer>
-                    ),
-                    "gravatar": (profile) => (
-                      <div>
-                        <div>
-                          <ProfileImage style={{flex: "none"}} email={profile.email || ''} />
-                          <WhiteButton mt="4px" w="170px">
-                            <ExternalLink href="https://en.gravatar.com/site/login">change gravatar</ExternalLink>
-                          </WhiteButton>
-                        </div>
-                      </div>
                     )
-
-
                   }
                 }
               />
@@ -170,7 +160,7 @@ export default class UserProfile extends React.Component {
             ? (
               <EntityContent style={{backgroundColor: "red"}}>
                 <SecondaryNavContent target="aboutMe" location={location}>
-                  <AboutMe profile={profile} Gate={Gate} />
+                  <AboutMe profile={profile} Gate={Gate} api={this.props.api}/>
                 </SecondaryNavContent>
                 <SecondaryNavContent target="settings" location={location}>
                   <div></div>
