@@ -2,10 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { get, isNull } from 'lodash';
-import styled from 'react-emotion';
 
 import { SecondaryNavMenu, SecondaryNavContent } from 'uikit/SecondaryNav';
-import Column from 'uikit/Column';
 import GenericErrorDisplay from 'uikit/GenericErrorDisplay';
 
 import { EntityTitleBar, EntityTitle, EntityContent } from '../';
@@ -17,13 +15,6 @@ import { fetchParticipant } from './actionCreators';
 import Spinner from 'react-spinkit';
 import EntityActionBar from '../EntityActionBar';
 import EntityContainer from '../EntityContainer';
-
-const Container = styled(Column)`
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  align-items: center;
-`;
 
 const getTags = participant => {
   const probandTag = participant.is_proband ? 'Proband' : 'Family Member';
