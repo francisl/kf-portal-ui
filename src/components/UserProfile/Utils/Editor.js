@@ -283,6 +283,9 @@ export class LabelSelect extends React.Component {
   }
 }
 
+/**
+ * A labelled textarea.
+ */
 export class LabelTextArea extends React.Component {
   constructor(props) {
     super(props);
@@ -320,6 +323,9 @@ const FieldContainer = (props) => (
 
 export {FieldContainer};
 
+/**
+ * A suggestion item (used for addressform and interests)
+ */
 export class SuggestionItem extends React.Component {
   constructor(props) {
     super(props);
@@ -344,6 +350,29 @@ export class SuggestionItem extends React.Component {
   }
 }
 
+/**
+ * An editor for a profile. Takes a list of fields, the profile, a Cells object, a title, and a submit function.
+ *
+ * Works by copying the profile, and then passing that copy to each of it's automated editing fields. Those automated
+ * fields are created from the fields array passed to the Editor: it'll make a new LabelInput for each of those fields,
+ * and use the Space Case version of the camelCase names of the fields as the label.
+ *
+ * Of course, such a generic approach cannot be accurate for every case. Thus, one can also pass new editing cells to
+ * the Editor: the Cells. We take each key of the Cells and call the cell with the copy of the profile as an
+ * argument. That way, the cell can implement modifications to the copy the way they want.
+ *
+ * Do note that you can add cells to Cells whose field name is not found in the field array passed to Editor.
+ *
+ * Once we're done editing, clicking the save button will simply overwrite Persona's profile with the copy. In other
+ * words, it is the responsibility of the cells to edit the profile the right way. The editor will NOT query them for
+ * the new field-value key upon saving.
+ *
+ * To simplify this process, you will find three components in this file: LabelInput (an input text), LabelSelect (a
+ * select) and LabelArea (a text area). These components already implement the required function to modify the profile's
+ * copy.
+ *
+ * For an example of a Component that does not use these three already-made components, see InterestsForm.js
+ */
 export default class Editor extends React.Component {
   constructor(props) {
     super(props);
@@ -358,7 +387,7 @@ export default class Editor extends React.Component {
     const predefCells = this.props.Cells;
     const cellKeys = Object.keys(predefCells);
 
-    const fields = [...this.props.fields].filter(f => !cellKeys.includes(f));
+    const fields = [...this.props.fields].filter(f => !cellKeys.includes(f)); //remove the fields that are redefined in Cells.
 
     return (
       <div>
