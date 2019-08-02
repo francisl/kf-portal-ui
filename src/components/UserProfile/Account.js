@@ -3,12 +3,11 @@ import { compose, withState } from 'recompose';
 import { Trans } from 'react-i18next';
 import { injectState } from 'freactal';
 
-import { CardHeader } from './ui';
 import IntegrationTable from './UserIntegrations/IntegrationTable';
 import Gen3Integration from './UserIntegrations/Items/Gen3Integration';
 import DcfIntegration from './UserIntegrations/Items/DcfIntegration';
 import CavaticaIntegration from './UserIntegrations/Items/CavaticaIntegration';
-import ConnectedWithBadge from './ConnectedWithBadge';
+import ConnectedWithBadge from './Utils/ConnectedWithBadge';
 
 import { fenceConnectionInitializeHoc } from 'stateProviders/provideFenceConnections';
 import { withApi } from 'services/api';
@@ -19,7 +18,8 @@ import Input from 'uikit/Input';
 import styled from 'react-emotion';
 import ExternalLink from 'uikit/ExternalLink';
 import { gen3WebRoot } from 'common/injectGlobals';
-import { Paragraph } from '../../uikit/Core';
+
+import { H2 as H2Core } from 'uikit/Headings';
 
 
 import 'semantic-ui-css/semantic.min.css';
@@ -35,14 +35,18 @@ const CardBody = styled('div')`
   font-family: Montserrat, sans-serif, sans-serif;
   font-size: 13px;
 `;
-styled('label')`
-  margin-left: 10px;
-  font-size: 14px;
+
+export const CardHeader = styled(H2Core)`
+  line-height: 1.27;
+  letter-spacing: 0.3px;
+  border-bottom: 1px solid #d4d6dd;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 10px;
+  margin-top: 13px;
 `;
-styled(Paragraph)`
-  line-height: 26px;
-  font-size: 14px;
-`;
+
 const PrivacyToggle = ({onClick, checked}) => {
   return (
     <ConnectButtonWrapper maxWidth={160} onClick={ () => {onClick(!checked); } }>
@@ -96,10 +100,11 @@ export default compose(
           description={
             <span style={{ width: "100%" }}>
               You profile is currently <b>{`${profile.isPublic ? "public" : "private"}`}</b>.
-              {profile.isPublic ? <span> Click <Link to={"/user/" + profile.egoId}>here</Link> to view your public profile.</span> : ""}
+              {profile.isPublic ? <span> Click <Link to={"/user/" + profile._id}>here</Link> to view your public profile.</span> : ""}
             </span>
           }
-          actions={<PrivacyToggle checked={profile.isPublic} onClick={ (checked) => {profile.isPublic = checked; submit({...profile});}}/>}
+
+          actions={<PrivacyToggle checked={profile.isPublic} onClick={ (checked) => {profile.isPublic = checked; submit({profile});}}/>}
         />
       </IntegrationTable>
     </SettingsSection>

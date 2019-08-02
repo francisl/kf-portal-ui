@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-const TitleH2 = ({children, style}) =>
+const Title = ({children, style}) =>
   <h2 style={{...style,
     color: "rgb(43, 56, 143)",
     fontWeight: "500",
@@ -17,4 +17,4 @@ const TitleH2 = ({children, style}) =>
     {children}
   </h2>;
 
-export default TitleH2;
+export default Title;

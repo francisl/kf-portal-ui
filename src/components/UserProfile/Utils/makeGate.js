@@ -1,7 +1,7 @@
 // what DON'T we want to see in a `role` page?
 import * as React from 'react';
 import Editor from './Editor';
-import TitleH2 from './TitleH2';
+import Title from './Title';
 
 const filters = {research: [], community: ["jobTitle"], health: ["jobTitle", "institution"], patient: ["jobTitle", "institution"]};
 
@@ -24,6 +24,18 @@ function isEmpty(val) {
   else return false;
 }
 
+/**
+ * This component gates access to the fields of a profile. It also gates access to editing those fields.
+ *
+ * It receives a list of fields. Those fields will have Cell called on them to obtain a displayable react Component, in
+ * order to display the value of those fields in the profile. However, if the same field name can be found in Cells, it
+ * the displayed Component will
+ *
+ * @param profile
+ * @param canEdit
+ * @param submit
+ * @returns {Function}
+ */
 const makeGate = (profile, canEdit, submit) => ({fields, title, Cell = (f) => <div style={{marginTop: "1em"}}>{profile[f]}</div>, Cells = {}, style={}, editorCells={}}) => {
   fields = fields.filter( f => {
     if(f.includes(" ")) return true;
@@ -45,7 +57,7 @@ const makeGate = (profile, canEdit, submit) => ({fields, title, Cell = (f) => <d
 
   return (
     <div style={style}>
-      <TitleH2 style={flexStyle} >{title}<EditButton fields={fields}/></TitleH2>
+      <Title style={flexStyle} >{title}<EditButton fields={fields}/></Title>
       {display}
     </div>
   )

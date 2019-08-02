@@ -1,11 +1,8 @@
 import { Tag } from '../../../uikit/Tags';
 import React from 'react';
 import Row from '../../../uikit/Row';
-import { InterestsAutocomplete2 } from '../InterestsAutocomplete';
-import { FieldContainer, LabelInput, LabelSelect, SuggestionItem } from './Editor';
+import { LabelInput, LabelSelect, SuggestionItem } from './Editor';
 import { DISEASE_AREAS, STUDY_SHORT_NAMES } from 'common/constants';
-import { difference } from 'lodash';
-import { getTags } from '../../../services/profiles';
 import override from "./override";
 
 const InterestsDisplay = ({profile, onClick=(i)=>null, Cell=(inter)=>inter}) => (
@@ -34,18 +31,16 @@ export class InterestsAutocomplete extends React.Component {
     super(props);
 
     this.state = {suggestions: []}
-    //this.getSuggestions("syn")
+    //this.getSuggestions("")
   }
 
   async getSuggestions(filter) {
-    const suggestions = await getTags(this.props.api)({ filter, size: 5 });
-    console.log(suggestions);
-    console.log(this.props.profile.interests);
-    const loweredSuggestions = [...new Set(suggestions.values.map(x => x.value.toLowerCase()))];
+    //const suggestions = await getTags(this.props.api)({ filter, size: 5 });
+    //const loweredSuggestions = [...new Set(suggestions.values.map(x => x.value.toLowerCase()))];
 
-    console.log({suggestions: difference(loweredSuggestions, this.props.profile.interests)});
+    //console.log({suggestions: loweredSuggestions.filter(area => !this.props.currentInterests.includes(area.toLowerCase()))});
 
-    this.setState({suggestions: ["interest 1", "interest 2"]});
+    this.setState({suggestions: ["interest 1", "interest 2"].filter(area => !this.props.currentInterests.includes(area.toLowerCase()))});
   }
 
   render() {
@@ -60,30 +55,37 @@ export class InterestsAutocomplete extends React.Component {
           }
         </div>
       </div>
-
     );
   }
 }
 
-export default class InterestsForm extends React.Component {
-  constructor(props) {
-    super(props);
-  }
+/**
+ * Array.from is not supported in IE
+ *
+ * @param set
+ * @returns {Array}
+ */
+function setToArray(set) {
+  const arr = [];
+  set.forEach(s => arr.push(s));
+  return arr;
+}
 
+export default class InterestsForm extends React.Component {
   getInterests() {
     return new Set(this.props.profile.interests);
   }
 
   addInterest(newInterest) {
-    this.props.profile.interests = Array.from(this.getInterests().add(newInterest));
-    this.setState({});  //trigger re-render
+    this.props.profile.interests = setToArray(this.getInterests().add(newInterest.toLowerCase()));
+    this.forceUpdate();
   }
 
   deleteInterest(delInterest) {
     const oldSet = this.getInterests();
     oldSet.delete(delInterest);
-    this.props.profile.interests = Array.from(oldSet);
-    this.setState({});  ////trigger re-render
+    this.props.profile.interests = setToArray(oldSet);
+    this.forceUpdate();
   }
 
   render() {
@@ -98,7 +100,7 @@ export default class InterestsForm extends React.Component {
         />
         <InterestSuggestions onChange={(e) => this.addInterest(e)} label={"Disease Areas"} category={DISEASE_AREAS} currentInterests={profile.interests}/>
         <InterestSuggestions onChange={(e) => this.addInterest(e)} label={"Studies"} category={STUDY_SHORT_NAMES} currentInterests={profile.interests}/>
-        <InterestsAutocomplete onClick={(e) => this.addInterest(e)} profile={profile} api={this.props.api}/>
+        <InterestsAutocomplete onClick={(e) => this.addInterest(e)} currentInterests={profile.interests} api={this.props.api}/>
       </div>
     );
   }

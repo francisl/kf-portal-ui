@@ -35,7 +35,7 @@ const DEFAULT_FIELDS = `
   acceptedKfOptIn
   acceptedNihOptIn
   acceptedDatasetSubscriptionKfOptIn
-  ${""/*isPublic*/}
+  isPublic
   sets {
     name
     size
@@ -49,19 +49,19 @@ const url = urlJoin(personaApiRoot, 'graphql');
 export const getProfile = api => async (id = null) => {
 
   const apiCall =
-    id === null ?
-    await api({   //if we're not asking about an ID, query profile
-      url,
-      body: {
-        query: `
-            query {
-              self {
-                ${DEFAULT_FIELDS}
+    id === null
+      ? await api({   //if we're not asking about an ID, query profile
+        url,
+        body: {
+          query: `
+              query {
+                self {
+                  ${DEFAULT_FIELDS}
+              }
             }
-          }
-        `,
-      },
-    })
+          `,
+        },
+      })
     : await api({ //if we're asking about an ID, query user
       url,
       body: {

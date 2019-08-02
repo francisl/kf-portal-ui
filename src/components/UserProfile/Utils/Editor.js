@@ -2,12 +2,8 @@ import * as React from 'react';
 import { TealActionButton, WhiteButton } from '../../../uikit/Button';
 import PencilIcon from 'react-icons/lib/fa/pencil';
 import styled from 'react-emotion';
-import { Field } from 'formik';
-import { space, width } from 'styled-system';
-import TitleH2 from './TitleH2';
-import { toSpaceCase, joinWithLast } from './toSpaceCase';
+import Title from './Title';
 import cloneDeep from "lodash/cloneDeep"
-import { omit } from 'lodash/object';
 
 import override from "./override";
 
@@ -297,7 +293,7 @@ const LabelEdit = ({label, children}) => (
 );
 
 const FieldContainer = (props) => (
-  <div style={{display: 'grid', gridTemplateColumns: "1fr 1fr", gridGap: "1em", backgroundColor: "rgb(237, 238, 241)", padding: "0.5em"}}>
+  <div style={{display: 'grid', gridTemplateColumns: "1fr 1fr", gridGap: "1em", border: "thin solid rgb(237, 238, 241)", padding: "0.5em"}}>
     {props.children}
   </div>
 );
@@ -383,22 +379,21 @@ export default class Editor extends React.Component {
 
                   onClick={(event) => event.stopPropagation()}  //cancel parent's onClick
                 >
-                  <TitleH2>
+                  <Title>
                     {(() => {
                       const temp = this.props.title;
 
                       if(temp === undefined) return "Edit your information";
                       else return "Edit your "+(temp.split(" ").map(t => t.charAt(0).toLowerCase() + t.slice(1, t.length)).join(" "));
                     })()}
-                  </TitleH2>
+                  </Title>
                   <div style={{display: "grid", gridTemplateColumns: "1fr", gridGap: "2em"}}>
+                    { cellKeys.map(k => predefCells[k](profileCopy)) }
                     {
-                      cellKeys.map(k => predefCells[k](profileCopy)).concat(
-                        fields.map( field =>
-                          <FieldContainer>
-                            {field.split(" ").map( f => <LabelInput field={f} profile={profileCopy} value={profileCopy[f]} label={toSpaceCase(f)}/>)}
-                          </FieldContainer>
-                        )
+                      fields.length > 0 && (
+                        <FieldContainer>
+                          { fields.map( field => field.split(" ").map( f => <LabelInput field={f} profile={profileCopy} value={profileCopy[f]} label={toSpaceCase(f)}/>)) }
+                        </FieldContainer>
                       )
                     }
                   </div>
@@ -416,4 +411,23 @@ export default class Editor extends React.Component {
       </div>
     )
   }
+}
+
+/**
+ * Returns the space case conversion of a camel case word
+ * @param word
+ * @returns {string|string}
+ */
+function toSpaceCase(word) {
+  let spaced = word.charAt(0).toUpperCase();
+
+  for(let i=1; i<word.length; i++) {
+    const char = word.charAt(i);
+
+    if(char === char.toUpperCase()) spaced += " ";
+
+    spaced += char;
+  }
+
+  return spaced;
 }

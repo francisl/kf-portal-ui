@@ -5,24 +5,25 @@ import { css } from 'react-emotion';
 import { getProfile, updateProfile } from 'services/profiles';
 import { ROLES } from 'common/constants';
 
-import { ProfileImage } from './ui';
 import AboutMe from './AboutMe';
 import RoleIconButton from '../RoleIconButton';
 import Error from '../Error';
 import { EntityContent } from '../EntityPage';
 import SecondaryNavMenu from '../../uikit/SecondaryNav/SecondaryNavMenu';
 import SecondaryNavContent from '../../uikit/SecondaryNav/SecondaryNavContent';
-import MemberActionBar from './ui/MemberActionBar';
 import makeGate from './Utils/makeGate';
 import EntityContainer from '../EntityPage/EntityContainer';
 import EntityActionBar from '../EntityPage/EntityActionBar';
 import AddressForm from './Utils/AddressForm';
 import { FieldContainer, LabelSelect } from './Utils/Editor';
-import toCamelCSS from './Utils/toCamelCSS';
 import { WhiteButton } from '../../uikit/Button';
 import ExternalLink from '../../uikit/ExternalLink';
-import InterestsAutocomplete, { InterestsAutocomplete2 } from './InterestsAutocomplete';
-import ResearchInterests from './ResearchInterests';
+import Account from './Account';
+import Gravatar from '../../uikit/Gravatar';
+
+
+export const ProfileImage = ({email="", style={}}) =>
+  <Gravatar style={{height: "173px", width: "173px", borderRadius: "50%", border: "5px solid #fff", ...style}} email={email} />;
 
 
 export const userProfileBackground = (
@@ -51,6 +52,8 @@ export default class UserProfile extends React.Component {
 
     this.state = {profile: null};
 
+    console.log("THE USER FROM INDEX: "); console.log(props.userID);
+
     this.setProfile = async () => {
       this.setState({ profile: await getProfile(props.api)(props.userID) })
     };
@@ -62,7 +65,7 @@ export default class UserProfile extends React.Component {
           ...values,
         },
       }).then(async updatedProfile => {
-        await this.setProfile(updatedProfile);
+        await this.setProfile();  //grab DB's profile to make sure we're up to date (sync client-DB)
       });
     };
 
@@ -81,9 +84,7 @@ export default class UserProfile extends React.Component {
       return <Error text={"404: Page not found."}/>;
     }
 
-    console.log(profile)
-
-    const Gate = makeGate(profile, canEdit, this.submit); //TODO put editButton inside Gate if possible
+    const Gate = makeGate(profile, canEdit, this.submit);
 
     return (
       <EntityContainer>
@@ -98,9 +99,9 @@ export default class UserProfile extends React.Component {
         `}
         >
           <div style={{display: "flex", flexDirection: 'row', width: "76%", maxWidth: "1400px"}}>
-            <ProfileImage style={{flex: "none"}} email={profile.email || ''} />
-            <div style={{paddingLeft: "15px", paddingRight: "15px"}}>
-              <RoleIconButton/>
+            <ProfileImage style={{flex: "none"}} email={profile.email} />
+            <div style={{paddingLeft: "15px", paddingRight: "15px", flexDirection: "column", display: "flex"}}>
+              <RoleIconButton style={{flexShrink: 1}}/>
               <Gate
                 style={{color: 'rgb(255, 255, 255)'}}
                 fields={["firstName lastName", "jobTitle", "institution", "department", "city state country"]}
@@ -129,148 +130,54 @@ export default class UserProfile extends React.Component {
                             <ExternalLink href="https://en.gravatar.com/site/login">change gravatar</ExternalLink>
                           </WhiteButton>
                         </div>
-                        <LabelSelect value={profile.title} field={"title"} profile={profile} label={"Title"}>
-                          <option value="">N/A</option>
-                          <option value="mr">Mr.</option>
-                          <option value="ms">Ms.</option>
-                          <option value="mrs">Mrs.</option>
-                          <option value="dr">Dr.</option>
-                        </LabelSelect>
+                        <div style={{display: "grid", gridTemplateColumns: "1fr", gridGap: "1em"}}>
+                          <LabelSelect value={profile.title} field={"title"} profile={profile} label={"Title"}>
+                            <option value="">N/A</option>
+                            <option value="mr">Mr.</option>
+                            <option value="ms">Ms.</option>
+                            <option value="mrs">Mrs.</option>
+                            <option value="dr">Dr.</option>
+                          </LabelSelect>
+                          <LabelSelect field={"roles"} value={profile.roles} profile={profile} label={"Role"}>
+                            <option value="research">Researcher</option>
+                            <option value="community">Community Member</option>
+                            <option value="health">Healthcare Professional</option>
+                            <option value="patient">Patient/Family Member</option>
+                          </LabelSelect>
+                        </div>
+
                       </FieldContainer>
                     ),
-                    role: (profile) => (
-                      <FieldContainer>
-                        <LabelSelect field={"roles"} value={profile.roles} profile={profile} label={"Role"}>
-                          <option value="research">Researcher</option>
-                          <option value="community">Community Member</option>
-                          <option value="health">Healthcare Professional</option>
-                          <option value="patient">Patient/Family Member</option>
-                        </LabelSelect>
-                      </FieldContainer>
-                    )
                   }
                 }
               />
             </div>
           </div>
-
         </div>
-        <EntityActionBar>
-          <SecondaryNavMenu
-            tabs={[
-              { name: 'About Me', hash: 'aboutMe' },
-              { name: 'Settings', hash: 'settings' }
-            ]}
-            defaultHash="aboutMe"
-            location={location}
-          />
-        </EntityActionBar>
-        {
-          canEdit
-            ? (
-              <EntityContent style={{backgroundColor: "red"}}>
-                <SecondaryNavContent target="aboutMe" location={location}>
-                  <AboutMe profile={profile} Gate={Gate} api={this.props.api}/>
-                </SecondaryNavContent>
-                <SecondaryNavContent target="settings" location={location}>
-                  <div></div>
-                </SecondaryNavContent>
-              </EntityContent>
-            )
-            : <div/>
+        { canEdit &&  //problems with css injection, so components must be flat, not contained in a div, so canEdit is used like so...
+          <EntityActionBar>
+            <SecondaryNavMenu
+              tabs={[
+                { name: 'About Me', hash: 'aboutMe' },
+                { name: 'Settings', hash: 'settings' }
+              ]}
+              defaultHash="aboutMe"
+              location={location}
+            />
+          </EntityActionBar>
         }
+        { canEdit &&
+          <EntityContent style={{marginRight: 0}}>
+            <SecondaryNavContent target="aboutMe" location={location}>
+              <AboutMe profile={profile} Gate={Gate} api={this.props.api}/>
+            </SecondaryNavContent>
+            <SecondaryNavContent target="settings" location={location}>
+              <Account profile={profile} submit={this.submit}/>
+            </SecondaryNavContent>
+          </EntityContent>
+        }
+        { !canEdit && <EntityContent target="aboutMe" location={location}><AboutMe profile={profile} Gate={Gate}/></EntityContent> }
       </EntityContainer>
     )
   }
 }
-
-/*
-
-        {(location === '#aboutMe' || location !== '#settings') && (
-          <AboutMe profile={profile} canEdit={canEdit} submit={submit} />
-        )}
-        {location === '#settings' && <Settings profile={profile} submit={submit} />}
- */
-
-/*
-<Container row alignItems="center">
-            <Row width="65%" pr={50} alignItems="center">
-
-              <div
-                className={css`
-                width: 49%;
-                align-items: flex-start;
-                padding: 0 15px;
-              `}
-              >
-
-
-                <H1 lineHeight="31px" mb="10px" mt="16px">
-                  {`${profile.firstName} ${profile.lastName}`}
-                </H1>
-
-                <div
-                  className={css`
-                  font-size: 14px;
-                  color: #fff;
-                  line-height: 28px;
-                `}
-                >
-                <span
-                  className={css`
-                    font-size: 1.4em;
-                  `}
-                >
-                  {profile.jobTitle}
-                </span>
-                  <span>{profile.institution}</span>
-                  <span>{profile.department}</span>
-                  <span>
-                  {[profile.city, profile.state, profile.country].filter(Boolean).join(', ')}
-                </span>
-                  <span
-                    css={`
-                    margin-top: 5px;
-                  `}
-                  ><EditButton fields={["linkedin"]}/>
-                </span>
-                </div>
-              </div>
-            </Row>
-
-            <div
-              css={`
-              width: 35%;
-              align-items: center;
-            `}
-            >
-              {canEdit ?
-                <div>
-                  <CompletionWrapper
-                    completed={percentageFilled}
-                    css={`
-                  width: 130px;
-                `}
-                  >
-                    <CompleteOMeter percentage={percentageFilled} />
-                  </CompletionWrapper>
-                  <div
-                    css={`
-                  font-size: 13px;
-                  font-style: italic;
-                  line-height: 1.69;
-                  color: #ffffff;
-                  padding-top: 21px;
-                `}
-                  >
-                    Complete your profile for a more personalized
-                    <br />
-                    experience and to help encourage collaboration!
-                  </div>
-                </div>
-                : ""
-              }
-
-            </div>
-          </Container>
- */

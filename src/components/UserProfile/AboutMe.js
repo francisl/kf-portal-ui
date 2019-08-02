@@ -1,8 +1,6 @@
 import React from 'react';
-import Row from 'uikit/Row';
-import { Tag } from '../../uikit/Tags';
 import AddressForm from './Utils/AddressForm';
-import { LabelSelect, LabelTextArea } from './Utils/Editor';
+import { LabelTextArea } from './Utils/Editor';
 import WebsiteIcon from '../../icons/WebsiteIcon';
 import GoogleScholarIcon from '../../icons/GoogleScholarIcon';
 import LinkedInIcon from '../../icons/LinkedInIcon';
