@@ -24,11 +24,11 @@ const AboutMe = ({profile, Gate, api}) => {
       <Gate
         fields={["bio", "story"]}
         title={"Profile"}
-        Cell={ (f) => <div><h3 style={{color: "rgb(43, 56, 143)"}}>My {f}</h3><div>{profile[f]}</div></div>}
+        Cell={ (f) => <div style={{marginBottom: "1em"}}><h3 style={{color: "rgb(43, 56, 143)"}}>My {f}</h3><div>{profile[f]}</div></div>}
         editorCells={
           {
-            bio: (profile) => <LabelTextArea profile={profile} label={"Bio"} value={profile.bio} type={"text"}/>,
-            story: (profile) => <LabelTextArea profile={profile} label={"Story"} value={profile.story} type={"text"}/>
+            bio: (profile) => <LabelTextArea field={"bio"} profile={profile} label={"Bio"} value={profile.bio} type={"text"}/>,
+            story: (profile) => <LabelTextArea field={"story"} profile={profile} label={"Story"} value={profile.story} type={"text"}/>
           }
         }
       />

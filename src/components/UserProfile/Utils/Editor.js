@@ -224,6 +224,9 @@ const areaStyle = {
   WebkitBorderImage: 'none'
 };
 
+/**
+ * A labelled inputtext
+ */
 export class LabelInput extends React.Component {
   constructor(props) {
     super(props);
@@ -250,6 +253,9 @@ export class LabelInput extends React.Component {
   }
 }
 
+/**
+ * A labelled select. Takes an array of <option/> as children.
+ */
 export class LabelSelect extends React.Component {
   constructor(props) {
     super(props);
@@ -277,13 +283,27 @@ export class LabelSelect extends React.Component {
   }
 }
 
-const LabelTextArea = (props) => (
-  <LabelEdit label={props.label}>
-    <textarea {...override(props, {style: areaStyle})}></textarea>
-  </LabelEdit>
-);
+export class LabelTextArea extends React.Component {
+  constructor(props) {
+    super(props);
 
-export {LabelTextArea};
+    this.state = {value: props.value};
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(e) {
+    if(this.props.field) this.props.profile[this.props.field] = e.target.value;
+    this.setState({value: e.target.value})
+  }
+
+  render() {
+    return (
+      <LabelEdit label={this.props.label}>
+        <textarea {...override(this.props, [{style: areaStyle}, {value: this.state.value}, {onChange: (e) => this.handleChange(e)}])}></textarea>
+      </LabelEdit>
+    );
+  }
+}
 
 const LabelEdit = ({label, children}) => (
   <div style={{boxSizing: "border-box"}}>

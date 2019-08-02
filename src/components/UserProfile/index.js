@@ -52,8 +52,6 @@ export default class UserProfile extends React.Component {
 
     this.state = {profile: null};
 
-    console.log("THE USER FROM INDEX: "); console.log(props.userID);
-
     this.setProfile = async () => {
       this.setState({ profile: await getProfile(props.api)(props.userID) })
     };
