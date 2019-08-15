@@ -19,7 +19,7 @@ import { resetVirtualStudy } from '../../../store/actionCreators/virtualStudies'
 import { store } from '../../../store';
 import prettifyAge from './Utils/prettifyAge';
 import { flatMap } from 'lodash/collection';
-import { HPOLink, SNOMEDLink } from './Utils/Links';
+import { HPOLink, SNOMEDLink , MONDOLink, NCITLink} from '../../Utils/DiagnosisAndPhenotypeLinks';
 
 //https://kf-qa.netlify.com/participant/PT_C954K04Y#summary tons of phenotypes
 //https://kf-qa.netlify.com/participant/PT_CB55W43A#clinical family has mother and child being affected
@@ -65,7 +65,9 @@ class ParticipantClinical extends React.Component {
         return temp;
       })(),
     ).then(nums => {
-      for (let i = 0; i < nums.length; i++) diagnoses[i].shared_with = get(nums[i], 'data.participant.hits.total', '--');
+      for (let i = 0; i < nums.length; i++) {
+        diagnoses[i].shared_with = this.prettySharedWith(get(nums[i], 'data.participant.hits.total', '--'));
+      }
 
       this.updateState({ diagnoses: sanitize(diagnoses) });  //once we're ready, just tell the state, it'll do the rest
     });
@@ -114,8 +116,9 @@ class ParticipantClinical extends React.Component {
         return pheno.interpretation === "Observed" ? callObs(pheno.hpo) : callNotObs(pheno.hpo);
       })
     ).then(nums => {
-      for (let i = 0; i < nums.length; i++)
-        phenotypes[i].shared_with = get(nums[i], 'data.participant.hits.total', '--');
+      for (let i = 0; i < nums.length; i++) {
+        phenotypes[i].shared_with = this.prettySharedWith(get(nums[i], 'data.participant.hits.total', '--'));
+      }
 
       this.updateState({ phenotypes: sanitize(phenotypes) });  //once we're ready, just tell the state, it'll do the rest
     });
@@ -133,21 +136,14 @@ class ParticipantClinical extends React.Component {
     this.phenotypeIntoState(api);
   }
 
-  render() {
-    const cellBreak = wrapper => <div style={{wordBreak: "break-word", textTransform: "capitalize"}}>{wrapper.value}</div>;
+  prettySharedWith(amount) {
+    if(amount === "--") return amount;
+    else if(amount === 1) return `${amount} participant`;
+    else return `${amount} participants`;
+  }
 
-    const diagHeads = [
-      { Header: 'Diagnosis Category', accessor: 'diagnosis_category', Cell: cellBreak },
-      { Header: 'Diagnosis (Mondo)', accessor: 'mondo_id_diagnosis', Cell: cellBreak },
-      { Header: 'Diagnosis (NCIT)', accessor: 'ncit_id_diagnosis', Cell: cellBreak },
-      { Header: 'Diagnosis (Source Text)', accessor: 'source_text_diagnosis', Cell: cellBreak },
-      { Header: 'Age at event', accessor: 'age_at_event_days', Cell: cellBreak },
-      {
-        Header: 'Shared with',
-        accessor: 'shared_with',
-        Cell: wrapper => {
-
-          if(wrapper.value === "0"|| wrapper.value === 0) return <div>0</div>;
+   showParticipantNb = (wrapper , field , value) =>{
+          if(wrapper.value === "0 participants") return <div>0 participants</div>;
 
           const onClick = () => {
             store.dispatch(resetVirtualStudy());
@@ -155,8 +151,8 @@ class ParticipantClinical extends React.Component {
             const newSqon = {
               op: 'in',
               content: {
-                field: 'diagnoses.mondo_id_diagnosis',
-                value: [wrapper.original.mondo_id_diagnosis],
+                field: field,
+                value: value,
               },
             };
 
@@ -174,6 +170,28 @@ class ParticipantClinical extends React.Component {
           };
 
           return <Link to={"/explore"} onClick={onClick}>{wrapper.value}</Link>;
+    }
+
+
+
+  render() {
+    const cellBreak = wrapper => <div style={{wordBreak: "break-word", textTransform: "capitalize"}}>{wrapper.value}</div>;
+
+    const diagHeads = [
+      { Header: 'Diagnosis Category', accessor: 'diagnosis_category', Cell: cellBreak },
+      { Header: 'Diagnosis (Mondo)', accessor: 'mondo_id_diagnosis', Cell: (wrapper) => wrapper.value === "--" ? <div>--</div> : <MONDOLink mondo={wrapper.value}/> },
+      { Header: 'Diagnosis (NCIT)', accessor: 'ncit_id_diagnosis',  Cell: (wrapper) => wrapper.value === "--" ? <div>--</div> : <NCITLink ncit={wrapper.value}/> },
+      { Header: 'Diagnosis (Source Text)', accessor: 'source_text_diagnosis', Cell: cellBreak },
+      { Header: 'Age at event', accessor: 'age_at_event_days', Cell: cellBreak },
+      {
+        Header: 'Mondo term shared with',
+        accessor: 'shared_with',
+        Cell: wrapper => {
+
+        const  participant = this.showParticipantNb(wrapper , 'diagnoses.mondo_id_diagnosis' , [wrapper.original.mondo_id_diagnosis])
+
+        return participant
+
         },
       },
     ];
@@ -185,37 +203,13 @@ class ParticipantClinical extends React.Component {
       { Header: 'Interpretation', accessor: 'interpretation', Cell: cellBreak },
       { Header: 'Age at event', accessor: 'age_at_event_days', Cell: cellBreak },
       {
-        Header: 'Shared with (HPO)',
+        Header: 'HPO term shared with',
         accessor: 'shared_with',
         Cell: wrapper => {
 
-          if(wrapper.value === "0"|| wrapper.value === 0) return <div>0</div>;
+          const  participant = this.showParticipantNb(wrapper , wrapper.original.interpretation === 'Observed' ? "phenotype.hpo_phenotype_observed" : "phenotype.hpo_phenotype_not_observed" , [wrapper.original.hpo])
 
-          const onClick = () => {
-            store.dispatch(resetVirtualStudy());
-
-            const newSqon = {
-              op: 'in',
-              content: {
-                field: wrapper.original.interpretation === 'Observed' ? "phenotype.hpo_phenotype_observed" : "phenotype.hpo_phenotype_not_observed",
-                value: [wrapper.original.hpo],
-              },
-            };
-
-            const modifiedSqons = setSqonValueAtIndex(
-              getDefaultSqon(), //virtualStudy.sqons,
-              0, //virtualStudy.activeIndex,
-              newSqon,
-              {
-                operator: MERGE_OPERATOR_STRATEGIES.KEEP_OPERATOR,
-                values: MERGE_VALUES_STRATEGIES.APPEND_VALUES,
-              },
-            );
-
-            store.dispatch(setSqons(modifiedSqons))
-          };
-
-          return <Link to={"/explore"} onClick={onClick}>{wrapper.value}</Link>;
+          return participant
         },
       },
     ];

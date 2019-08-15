@@ -11,6 +11,7 @@ import SequencingDataTable from './Utils/SequencingDataTable';
 import OtherDataTypesSummaryTable from './Utils/OtherDataTypesSummaryTable';
 import { get } from 'lodash';
 import sanitize from './Utils/sanitize';
+import {NCITLink} from '../../Utils/DiagnosisAndPhenotypeLinks';
 
 //https://kf-qa.netlify.com/participant/PT_CMB6TASJ#summary
 
@@ -146,7 +147,7 @@ function specimenSummaryTableData(specimen) {
     { title: 'Age at Sample Acquisition', summary: specimen.age_at_event_days },
     { title: 'Analyte Type', summary: specimen.analyte_type },
     { title: 'Composition', summary: specimen.composition },
-    { title: 'Tissue Type (NCIT)', summary: specimen.ncit_id_tissue_type },
+    { title: 'Tissue Type (NCIT)', summary: <NCITLink ncit={specimen.ncit_id_tissue_type}/> },
     { title: 'Anatomical Site (Uberon)', summary: specimen.uberon_id_anatomical_site },
     { title: 'Tissue Type (Source Text)', summary: specimen.source_text_tissue_type },
     { title: 'Tumor Description (Source Text)', summary: specimen.source_text_tumor_descriptor },
@@ -156,6 +157,16 @@ function specimenSummaryTableData(specimen) {
 
 const ParticipantSummary = ({ participant }) => {
   const specimens = get(participant, 'biospecimens.hits.edges', []);
+  const hasFile = get(participant, 'files.hits.edges', [] ).length === 0 ? false : true
+  let wrongTypes = ['Aligned Reads', 'gVCF', 'Unaligned Reads', 'Variant Calls'];
+
+  let hasSequencingData = false
+  for(const i in get(participant, 'files.hits.edges', [] )){
+    if(wrongTypes.includes(get(participant, 'files.hits.edges', [] )[i].node.data_type)){
+        hasSequencingData =true
+        break
+    }
+  }
 
   return (
     <React.Fragment>
@@ -185,19 +196,26 @@ const ParticipantSummary = ({ participant }) => {
         </div>
       }
 
-      <EntityContentDivider />
-      <EntityContentSection title="Available Data Files" size={'big'}>
-        <EntityContentSection title="Sequencing Data" size={'small'}>
-          <SequencingDataTable
-            files={get(participant, 'files.hits.edges', [])}
-            participantID={participant.kf_id}
-          />
-        </EntityContentSection>
-        <OtherDataTypesSummaryTable
-          files={get(participant, 'files.hits.edges', [])}
-          participantID={participant.kf_id}
-        />
-      </EntityContentSection>
+
+       {
+        hasFile ?
+        <div>
+            <EntityContentDivider />
+            <EntityContentSection title="Available Data Files" size={'big'}>
+                {
+                 hasSequencingData ?
+                 <EntityContentSection title="Sequencing Data" size={'small'}>
+                    <SequencingDataTable files={get(participant, 'files.hits.edges', [])} participantID={participant.kf_id}/>
+                 </EntityContentSection>    :   ""
+                }
+                <OtherDataTypesSummaryTable
+                  files={get(participant, 'files.hits.edges', [])}
+                  participantID={participant.kf_id}
+                  hasSequencingData = {hasSequencingData}
+                />
+            </EntityContentSection>
+        </div>: ""
+      }
     </React.Fragment>
   );
 };
