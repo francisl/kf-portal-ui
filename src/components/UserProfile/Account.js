@@ -21,14 +21,13 @@ import { gen3WebRoot } from 'common/injectGlobals';
 
 import { H2 as H2Core } from 'uikit/Headings';
 
-
 import 'semantic-ui-css/semantic.min.css';
 import { ConnectButtonWrapper } from './UserIntegrations/ui';
 import { Link } from 'react-router-dom';
 import IntegrationTableItem from './UserIntegrations/IntegrationTableItem';
 
-import PrivacyIcon from "assets/icon-privacy-private.svg";
-import PublicIcon from "assets/icon-privacy-public.svg";
+import PrivacyIcon from 'assets/icon-privacy-private.svg';
+import PublicIcon from 'assets/icon-privacy-public.svg';
 
 const CardBody = styled('div')`
   margin: -15px 0 15px 0;
@@ -47,12 +46,17 @@ export const CardHeader = styled(H2Core)`
   margin-top: 13px;
 `;
 
-const PrivacyToggle = ({onClick, checked}) => {
+const PrivacyToggle = ({ onClick, checked }) => {
   return (
-    <ConnectButtonWrapper maxWidth={160} onClick={ () => {onClick(!checked); } }>
-      <div>{checked ? "Make Private" : "Make Public"}</div>
+    <ConnectButtonWrapper
+      maxWidth={160}
+      onClick={() => {
+        onClick(!checked);
+      }}
+    >
+      <div>{checked ? 'Make Private' : 'Make Public'}</div>
     </ConnectButtonWrapper>
-  )
+  );
 };
 
 const SettingsSection = x => <Column justifyContent="stretch" w="100%" pb={4} {...x} />;
@@ -84,27 +88,43 @@ export default compose(
         <Trans>Privacy</Trans>
       </CardHeader>
       <CardBody>
-        When your profile is public, other logged-in Kids First members (and potential contributors) will be able to
-        find your profile in searches. If your profile is private, you will be private and unsearchable to others.
+        When your profile is public, other logged-in Kids First members (and potential contributors)
+        will be able to find your profile in searches. If your profile is private, you will be
+        private and unsearchable to others.
       </CardBody>
       <IntegrationTable>
         <IntegrationTableItem
           connected={false}
-
           //https://www.materialpalette.com/icons
-          logo={profile.isPublic
-            ? <img src={PublicIcon}  alt={"public icon"}/>
-            : <img src={PrivacyIcon}  alt={"private icon"}/>
+          logo={
+            profile.isPublic ? (
+              <img src={PublicIcon} alt={'public icon'} />
+            ) : (
+              <img src={PrivacyIcon} alt={'private icon'} />
+            )
           }
-
           description={
-            <span style={{ width: "100%" }}>
-              You profile is currently <b>{`${profile.isPublic ? "public" : "private"}`}</b>.
-              {profile.isPublic ? <span> Click <Link to={"/user/" + profile._id}>here</Link> to view your public profile.</span> : ""}
+            <span style={{ width: '100%' }}>
+              You profile is currently <b>{`${profile.isPublic ? 'public' : 'private'}`}</b>.
+              {profile.isPublic ? (
+                <span>
+                  {' '}
+                  Click <Link to={'/user/' + profile._id}>here</Link> to view your public profile.
+                </span>
+              ) : (
+                ''
+              )}
             </span>
           }
-
-          actions={<PrivacyToggle checked={profile.isPublic} onClick={ (checked) => {profile.isPublic = checked; submit({profile});}}/>}
+          actions={
+            <PrivacyToggle
+              checked={profile.isPublic}
+              onClick={checked => {
+                profile.isPublic = checked;
+                submit(profile);
+              }}
+            />
+          }
         />
       </IntegrationTable>
     </SettingsSection>
