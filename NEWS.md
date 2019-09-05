@@ -1,5 +1,47 @@
 # Release notes for kf-portal-ui
 
+## 2019-08-29 kf-portal-ui 2.9.0
+
+This release makes ORCID feature available for everybody, and improves error messages in case of errors during login with ORCID.
+
+### Includes
+
+- [#2016](https://github.com/kids-first/kf-portal-ui/issues/2016) OrcId Login : Make available to greater public
+
+## 2019-08-28 kf-portal-ui 2.8.0
+
+This release introduces bug fixes.
+
+### Bug fixes
+
+- [#2020](https://github.com/kids-first/kf-portal-ui/issues/2020) Cohort Builder: MONDO link doesn't appear in the table view on the cohort builder
+- [#1961](https://github.com/kids-first/kf-portal-ui/issues/1961) Open access files should be accessible for everyone
+- [#2005](https://github.com/kids-first/kf-portal-ui/issues/2025) Participant entity page: Don't display the sequencing data table if empty
+
+## 2019-08-13 kf-portal-ui 2.7.2
+
+This release includes a way to deploy the OrcId login button in production, but hidden. This is only done for testing purposes.
+
+### Includes
+
+- [#2014](https://github.com/kids-first/kf-portal-ui/issues/2014) Orcid Login : hidden deploy to test in production
+
+## 2019-08-09 kf-portal-ui 2.7.1
+
+This release concentrates on bug fixes following the release 2.7.0 and contains no new features.
+
+### Bug fixes
+
+- [#2001](https://github.com/kids-first/kf-portal-ui/issues/2001) Broken link in the maintenance page
+- [#2007](https://github.com/kids-first/kf-portal-ui/issues/2007) Participant clinical tab returns a Maintenance page !!
+- [#2008](https://github.com/kids-first/kf-portal-ui/issues/2008) Participant Entity page: Empty lines in the Family members table
+
+### Also included
+
+Data fix, introduced 2019-08-08
+
+- [#2003](https://github.com/kids-first/kf-portal-ui/issues/2003) Rename study "Consortium: Pediatric Brain Tumors - CBTTC" to "Pediatric Brain Tumor Atlas: CBTTC"
+
 ## 2019-08-05 kf-portal-ui 2.7.0
 
 This release concentrates on renaming the studies and adding the participant entity page, including family and phenotype data. The format of family and phenotype data has been corrected in the ETL as part of that effort.
