@@ -3,12 +3,18 @@ import * as React from 'react';
 import Editor from './Editor';
 import Title from './Title';
 
-const filters = {research: [], community: ["jobTitle"], health: ["jobTitle", "institution"], patient: ["jobTitle", "institution"]};
+const filters = {
+  research: [],
+  community: ['jobTitle', 'institution', 'department'],
+  health: [],
+  patient: ['jobTitle', 'institution', 'department'],
+};
 
 const flexStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "flex-start",
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+  flexDirection: 'column',
 };
 
 /**
@@ -19,8 +25,8 @@ const flexStyle = {
  */
 function isEmpty(val) {
   if (val === null) return true;
-  else if (val === "") return true;
-  else if(Array.isArray(val) && val.length === 0) return true;
+  else if (val === '') return true;
+  else if (Array.isArray(val) && val.length === 0) return true;
   else return false;
 }
 
@@ -45,32 +51,59 @@ function isEmpty(val) {
  * @param submit  The submit function to save changes to the profile
  * @returns {Function}  Returns a Gate component appropriate for canEdit and for the profile's roles.
  */
-const makeGate = (profile, canEdit, submit) => ({fields, title, Cell = (f) => <div style={{marginTop: "1em"}}>{profile[f]}</div>, Cells = {}, style={}, editorCells={}}) => {
-  fields = fields.filter( f => {
-    if(f.includes(" ")) return true;
-    else return !filters[profile.roles[0]].includes(f)
+const makeGate = (profile, canEdit, submit) => ({
+  fields,
+  title,
+  Cell = f => (
+    <div key={f} style={{ marginTop: '1em' }}>
+      {profile[f]}
+    </div>
+  ),
+  Cells = {},
+  style = {},
+  editorCells = {},
+}) => {
+  fields = fields.filter(f => {
+    if (f.includes(' ')) return true;
+    else return !filters[profile.roles[0]].includes(f);
   });
 
-  const display = fields.map( f => isEmpty(profile[f]) ? "" : f in Cells ? Cells[f]() : Cell(f));
-
-  const EditButton = canEdit  // EditButton is either empty string or an actual edit button depending on canEdit
-    //Editor is actually just a button that says edit... until you click on sait button.
-    ? ({fields}) => <Editor profile={profile} fields={fields} title={title} Cells={editorCells} submit={submit}/>
-    : (props) => null;
-
-  if(title === "" || title === undefined) return (
-    <div style={{...style, ...flexStyle}}>
-      <div>{display}</div>
-      <EditButton fields={fields}/>
-    </div>
+  const display = fields.map((f, index) =>
+    isEmpty(profile[f]) ? '' : f in Cells ? Cells[f](`key-${f}-index-${index}`) : Cell(f),
   );
+
+  const EditButton = canEdit // EditButton is either empty string or an actual edit button depending on canEdit
+    ? //Editor is actually just a button that says edit... until you click on sait button.
+      ({ fields }) => {
+        return (
+          <Editor
+            profile={profile}
+            fields={fields}
+            title={title}
+            Cells={editorCells}
+            submit={submit}
+          />
+        );
+      }
+    : props => null;
+
+  if (title === '' || title === undefined)
+    return (
+      <div style={{ ...style, ...flexStyle }}>
+        <div style={{ marginBottom: '10px' }}>{display}</div>
+        <EditButton fields={fields} />
+      </div>
+    );
 
   return (
     <div style={style}>
-      <Title style={flexStyle} >{title}<EditButton fields={fields}/></Title>
+      <Title style={flexStyle}>
+        {title}
+        <EditButton fields={fields} />
+      </Title>
       {display}
     </div>
-  )
+  );
 };
 
 export default makeGate;

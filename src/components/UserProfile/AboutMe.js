@@ -64,17 +64,17 @@ const AboutMe = ({ profile, Gate, api }) => {
         title={'Contact Information'}
         fields={['institution', 'addr', 'institutionalEmail', 'phone']}
         Cells={{
-          institution: () => (
-            <ContactContainer>
+          institution: keyBuiltFromField => (
+            <ContactContainer key={keyBuiltFromField}>
               <CommunityIcon height={'16px'} fill={'#a42c90'} style={{ margin: 0 }} />
               <div>{profile.institution}</div>
             </ContactContainer>
           ),
-          addr: () => {
+          addr: keyBuiltFromField => {
             return ['addressLine1', 'addressLine2', 'city', 'state', 'country', 'zip'].some(
               fieldName => !!profile[fieldName],
             ) ? (
-              <ContactContainer>
+              <ContactContainer key={keyBuiltFromField}>
                 <MapMarkerIcon height={'17px'} />
                 <div>
                   <div style={{ lineHeight: '25.62px' }}>
@@ -88,14 +88,16 @@ const AboutMe = ({ profile, Gate, api }) => {
               </ContactContainer>
             ) : null;
           },
-          institutionalEmail: () => (
-            <ContactContainer>
+          institutionalEmail: keyBuiltFromField => (
+            <ContactContainer key={keyBuiltFromField}>
               <EnvelopeIcon height={'10px'} />
-              <div>{profile.institutionalEmail}</div>
+              <ExternalLink href={`mailto:${profile.institutionalEmail}`}>
+                {profile.institutionalEmail}
+              </ExternalLink>
             </ContactContainer>
           ),
-          phone: () => (
-            <ContactContainer>
+          phone: keyBuiltFromField => (
+            <ContactContainer key={keyBuiltFromField}>
               <PhoneIcon height={'12px'} />
               <div>{profile.phone}</div>
             </ContactContainer>

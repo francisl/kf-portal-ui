@@ -1,143 +1,138 @@
 import React from 'react';
-import PlacesAutocomplete, { geocodeByPlaceId} from 'react-places-autocomplete';
+import { geocodeByPlaceId } from 'react-places-autocomplete';
+import { FieldContainer, LabelInput, SuggestionItem } from './Editor';
+import PlacesAutocomplete from 'react-places-autocomplete';
 import scriptjs from 'scriptjs';
 import { googleMapsKey } from 'common/injectGlobals';
-import { FieldContainer, LabelInput, SuggestionItem } from './Editor';
-
-class WrappedPlacesAutocomplete extends React.Component {
-  //https://github.com/kenny-hibino/react-places-autocomplete/pull/107
-  state = { loaded: false };
-
-  componentDidMount() {
-    scriptjs(
-      `https://maps.googleapis.com/maps/api/js?key=${googleMapsKey}&libraries=places`,
-      () => this.setState({ loaded: true, }),
-    );
-  }
-
-  render() {
-    if (!this.state.loaded) return null;
-    return <PlacesAutocomplete {...this.props}>{this.props.children}</PlacesAutocomplete>;
-  }
-}
 
 export default class AddressForm extends React.Component {
   constructor(props) {
     super(props);
 
-    const {
+    const { addressLine1, addressLine2, country, state, city, zip } = this.props.profile || '';
+
+    this.state = {
       addressLine1,
       addressLine2,
       country,
-      state,
       city,
+      state,
       zip,
-    } = this.props.profile || "";
-
-    this.state = {addressLine1, addressLine2, country, city, state, zip};
-    this.updateState = (state, callback) => this.setState({...this.state, ...state}, callback);
-    this.handleSelect.bind(this);
+      searchAddressVal: '',
+      isGoogleScriptLoaded: false,
+    };
 
     this.suggestions = [];
   }
 
-  handleChange = address => {
-    this.updateState({ address });
+  componentDidMount() {
+    scriptjs(`https://maps.googleapis.com/maps/api/js?key=${googleMapsKey}&libraries=places`, () =>
+      this.setState({ isGoogleScriptLoaded: true }),
+    );
+  }
+
+  handleChange = searchAddressVal => {
+    this.setState({ searchAddressVal });
   };
 
-  handleSelect = (address, placeID) => {
-    console.log("HANDLING SELECT. PLaceid is"); console.log(placeID);
+  handleSelect = (address, placeId) => {
+    geocodeByPlaceId(placeId)
+      .then(results => {
+        const defaultObject = { long_name: '' };
+        const country = (
+          results[0].address_components.find(c => c.types.includes('country')) || defaultObject
+        ).long_name;
+        const state = (
+          results[0].address_components.find(c =>
+            c.types.includes('administrative_area_level_1'),
+          ) || defaultObject
+        ).long_name;
+        const city = (
+          results[0].address_components.find(c => c.types.includes('locality')) || defaultObject
+        ).long_name;
+        const streetNumber = (
+          results[0].address_components.find(c => c.types.includes('street_number')) ||
+          defaultObject
+        ).long_name;
+        const route = (
+          results[0].address_components.find(c => c.types.includes('route')) || defaultObject
+        ).long_name;
+        const zip = (
+          results[0].address_components.find(
+            c => c.types.includes('zip') || c.types.includes('postal_code'),
+          ) || defaultObject
+        ).long_name;
 
-    geocodeByPlaceId(placeID).then(results => {
-      const defaultObject = { long_name: '' };
-      const country = (
-        results[0].address_components.find(c => c.types.includes('country')) ||
-        defaultObject
-      ).long_name;
-      const state = (
-        results[0].address_components.find(c =>
-          c.types.includes('administrative_area_level_1'),
-        ) || defaultObject
-      ).long_name;
-      const city = (
-        results[0].address_components.find(c => c.types.includes('locality')) ||
-        defaultObject
-      ).long_name;
-      const streetNumber = (
-        results[0].address_components.find(c => c.types.includes('street_number')) ||
-        defaultObject
-      ).long_name;
-      const route = (
-        results[0].address_components.find(c => c.types.includes('route')) ||
-        defaultObject
-      ).long_name;
-      const zip = (
-        results[0].address_components.find(
-          c => c.types.includes('zip') || c.types.includes('postal_code'),
-        ) || defaultObject
-      ).long_name;
-
-      this.updateState(
-        {
+        this.setState({
           addressLine1: `${streetNumber} ${route}`,
           state,
           city,
           zip,
-          country
-        }
-      );
-    }).catch(error => console.error(error));
+          country,
+          searchAddressVal: '',
+        });
+      })
+      .catch(error => console.error(error));
   };
 
-  getSuggestions(suggestions) {
-    if(suggestions.length === 0) return this.suggestions;
-    else {
-      this.suggestions = suggestions;
-      return this.suggestions;
-    }
-  }
-
   render() {
-    console.log(this.state)
-    console.log(this.state.addressLine1)
+    const {
+      isGoogleScriptLoaded,
+      addressLine1,
+      addressLine2,
+      country,
+      city,
+      state,
+      zip,
+      searchAddressVal,
+    } = this.state;
+    if (!isGoogleScriptLoaded) {
+      return null;
+    }
 
-    const profile = this.props.profile;
+    const { profile } = this.props;
 
     return (
       <div>
-        <WrappedPlacesAutocomplete
-          value={this.state.address}
+        <PlacesAutocomplete
+          value={searchAddressVal}
           onChange={this.handleChange}
           onSelect={this.handleSelect}
         >
-          {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+          {({ getInputProps, suggestions, getSuggestionItemProps }) => (
             <div>
-              <LabelInput label={"Search For Your Location"} {...getInputProps()} />
-              {
-                this.getSuggestions(suggestions).map(suggestion => {
-                  //console.log(suggestion.placeId)
-                  return <SuggestionItem
-                    onClick={() => {
-                      this.suggestions = [];
-                      this.handleSelect("", suggestion.placeId);
-                    }}
-                    placeId={suggestion.placeId}
-                    description={suggestion.description}
+              <LabelInput label={'Search For Your Location'} {...getInputProps()} />
+              {suggestions.map((suggestion, index) => {
+                return (
+                  <SuggestionItem
+                    key={index}
+                    suggestion={suggestion}
+                    getSuggestionItemProps={getSuggestionItemProps}
                   />
-                })
-              }
-            </div>)}
-        </WrappedPlacesAutocomplete>
+                );
+              })}
+            </div>
+          )}
+        </PlacesAutocomplete>
         <FieldContainer>
-          <LabelInput profile={profile} field={"addressLine1"} label={"Address Line 1"} value={this.state.addressLine1}/>
-          <LabelInput profile={profile} field={"addressLine2"} label={"Address Line 2"} value={this.state.addressLine2}/>
-          <LabelInput profile={profile} field={"city"} label={"City"} value={this.state.city}/>
-          <LabelInput profile={profile} field={"state"} label={"State"} value={this.state.state}/>
-          <LabelInput profile={profile} field={"zip"} label={"ZIP Code"} value={this.state.zip}/>
-          <LabelInput profile={profile} field={"country"} label={"Country"} value={this.state.country}/>
+          <LabelInput
+            profile={profile}
+            field={'addressLine1'}
+            label={'Address Line 1'}
+            value={addressLine1}
+          />
+          <LabelInput
+            profile={profile}
+            field={'addressLine2'}
+            label={'Address Line 2'}
+            value={addressLine2}
+          />
+          <LabelInput profile={profile} field={'city'} label={'City'} value={city} />
+          <LabelInput profile={profile} field={'state'} label={'State'} value={state} />
+          <LabelInput profile={profile} field={'zip'} label={'ZIP Code'} value={zip} />
+          <LabelInput profile={profile} field={'country'} label={'Country'} value={country} />
         </FieldContainer>
       </div>
-
     );
   }
 }

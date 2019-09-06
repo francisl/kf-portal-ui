@@ -3,19 +3,13 @@ import { get, find } from 'lodash';
 import { ROLES } from 'common/constants';
 
 import { css } from 'emotion';
-import { withTheme } from 'emotion-theming';
-import { compose } from 'recompose';
-import { injectState } from 'freactal/lib/inject';
-
-const enhance = compose(withTheme, injectState);
 
 const roleLookup = ROLES.reduce((acc, { type, ...x }) => ({ ...acc, [type]: x }), {});
 
-const RoleIconButton = ({ className = '', children, theme, state: { loggedInUser } , style={}}) => {
-  const userRole = get(loggedInUser, ['roles', 0]);
-  const userRoleDisplayName = find(ROLES, { type: userRole }).displayName;
-  const RoleIcon = get(roleLookup, [userRole, 'icon'], null);
-  const background = get(roleLookup, [userRole, 'color'], null);
+const RoleIconButton = ({ className = '', children, style = {}, roleType }) => {
+  const userRoleDisplayName = find(ROLES, { type: roleType }).displayName;
+  const RoleIcon = get(roleLookup, [roleType, 'icon'], null);
+  const background = get(roleLookup, [roleType, 'color'], null);
 
   return (
     <div
@@ -64,4 +58,4 @@ const RoleIconButton = ({ className = '', children, theme, state: { loggedInUser
   );
 };
 
-export default enhance(RoleIconButton);
+export default RoleIconButton;

@@ -21,6 +21,9 @@ import ExternalLink from '../../uikit/ExternalLink';
 import Account from './Account';
 import Gravatar from '../../uikit/Gravatar';
 
+const getRoleTypeFromProfile = (profile, defaultValue = '') =>
+  get(profile, ['roles', 0], defaultValue);
+
 export const ProfileImage = ({ email = '', style = {} }) => (
   <Gravatar
     style={{
@@ -38,7 +41,7 @@ export const userProfileBackground = (
   loggedInUser,
   { showBanner = true, gradientDirection = 'right' } = {},
 ) => {
-  const role = ROLES.find(x => x.type === get(loggedInUser, 'roles[0]', '')) || {};
+  const role = ROLES.find(x => x.type === getRoleTypeFromProfile(loggedInUser)) || {};
   const banner = get(role, 'banner', '');
   const profileColors = get(role, 'profileColors', {});
   return css`
@@ -55,27 +58,25 @@ export const userProfileBackground = (
 };
 
 export default class UserProfile extends React.Component {
-  constructor(props) {
-    super(props);
+  state = { profile: null };
 
-    this.state = { profile: null };
+  submit = async values => {
+    const { api } = this.props;
+    const { profile } = this.state;
 
-    this.setProfile = async () => {
-      this.setState({ profile: await getProfile(props.api)(props.userID) });
-    };
+    const updatedProfile = await updateProfile(api)({
+      user: {
+        ...profile,
+        ...values,
+      },
+    });
+    this.setState({ profile: updatedProfile });
+  };
 
-    this.submit = async values => {
-      await updateProfile(props.api)({
-        user: {
-          ...this.state.profile,
-          ...values,
-        },
-      }).then(async updatedProfile => {
-        await this.setProfile(); //grab DB's profile to make sure we're up to date (sync client-DB)
-      });
-    };
-
-    this.setProfile();
+  async componentDidMount() {
+    const { api, userID } = this.props;
+    const fetchedProfile = await getProfile(api)(userID);
+    this.setState({ profile: fetchedProfile });
   }
 
   render() {
@@ -113,7 +114,10 @@ export default class UserProfile extends React.Component {
                 display: 'flex',
               }}
             >
-              <RoleIconButton style={{ flexShrink: 1 }} />
+              <RoleIconButton
+                style={{ flexShrink: 1 }}
+                roleType={getRoleTypeFromProfile(profile)}
+              />
               <Gate
                 style={{ color: 'rgb(255, 255, 255)' }}
                 fields={[
@@ -124,8 +128,9 @@ export default class UserProfile extends React.Component {
                   'city state country',
                 ]}
                 Cells={{
-                  'firstName lastName': () => (
+                  'firstName lastName': keyBuiltFromField => (
                     <h1
+                      key={keyBuiltFromField}
                       style={{
                         fontWeight: '500',
                         letterSpacing: '0.4px',
@@ -140,17 +145,23 @@ export default class UserProfile extends React.Component {
                       {profile.firstName} {profile.lastName}
                     </h1>
                   ),
-                  jobTitle: () => <div style={{ fontSize: '1.4em' }}>{profile.jobTitle}</div>,
-                  'city state country': () => (
-                    <div style={{ marginTop: '1em' }}>
+                  jobTitle: keyBuiltFromField => (
+                    <div key={keyBuiltFromField} style={{ fontSize: '1.4em' }}>
+                      {profile.jobTitle}
+                    </div>
+                  ),
+                  'city state country': keyBuiltFromField => (
+                    <div key={keyBuiltFromField} style={{ marginTop: '1em' }}>
                       {[profile.city, profile.state, profile.country].filter(Boolean).join(', ')}
                     </div>
                   ),
                 }}
                 editorCells={{
-                  'city state country': profile => <AddressForm profile={profile} />,
-                  'title, gravatar': profile => (
-                    <FieldContainer>
+                  'city state country': (profile, keyBuiltFromField) => (
+                    <AddressForm key={keyBuiltFromField} profile={profile} />
+                  ),
+                  'title, gravatar': (profile, keyBuiltFromField) => (
+                    <FieldContainer key={keyBuiltFromField}>
                       <div>
                         <ProfileImage style={{ flex: 'none' }} email={profile.email || ''} />
                         <WhiteButton mt="4px" w="170px">
@@ -174,7 +185,7 @@ export default class UserProfile extends React.Component {
                         </LabelSelect>
                         <LabelSelect
                           field={'roles'}
-                          value={profile.roles}
+                          value={getRoleTypeFromProfile(profile)}
                           profile={profile}
                           label={'Role'}
                         >
