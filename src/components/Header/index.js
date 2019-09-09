@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { Trans } from 'react-i18next';
 import { compose } from 'recompose';
@@ -118,16 +118,10 @@ const Header = ({
                   onToggle={toggleDropdown}
                   onOuterClick={() => setDropdownVisibility(false)}
                   items={[
-                    <DropdownLink
-                      onClick={toggleDropdown}
-                      to={`/profile#aboutMe`}
-                    >
+                    <DropdownLink onClick={toggleDropdown} to={`/profile#aboutMe`}>
                       <Trans>My Profile</Trans>
                     </DropdownLink>,
-                    <DropdownLink
-                      onClick={toggleDropdown}
-                      to={`/profile#settings`}
-                    >
+                    <DropdownLink onClick={toggleDropdown} to={`/profile#settings`}>
                       Settings
                     </DropdownLink>,
                     <DropdownLink
@@ -142,7 +136,7 @@ const Header = ({
                       <Trans>Logout</Trans>
                     </DropdownLink>,
                   ]}
-                  ItemWrapperComponent={props => <Fragment {...props} />}
+                  ItemWrapperComponent={props => <div {...props} />}
                   ContainerComponent={NavbarDropdownWrapper}
                   OptionsContainerComponent={NavbarDropdownOptionsContainer}
                   LabelContainer={MenuLabelContainer}
