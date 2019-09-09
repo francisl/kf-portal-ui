@@ -4,7 +4,7 @@ import PencilIcon from 'react-icons/lib/fa/pencil';
 import styled from 'react-emotion';
 import Title from './Title';
 import cloneDeep from 'lodash/cloneDeep';
-
+import PropTypes from 'prop-types';
 import override from './override';
 
 const StyledLabel = styled('label')`
@@ -352,7 +352,6 @@ const FieldContainer = props => (
 
 export { FieldContainer };
 
-const noop = () => undefined;
 /**
  * A suggestion item (used for addressform and interests)
  */
@@ -362,7 +361,6 @@ export class SuggestionItem extends React.Component {
 
     this.state = { hovered: false };
   }
-  //TODO ====================== proptypes
 
   onMouseEnter = () => this.setState({ hovered: true });
   onMouseLeave = () => this.setState({ hovered: false });
@@ -376,7 +374,7 @@ export class SuggestionItem extends React.Component {
       padding: '0.5em',
     };
 
-    const { suggestion, getSuggestionItemProps = noop } = this.props;
+    const { suggestion, getSuggestionItemProps } = this.props;
 
     return (
       <div style={style} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
@@ -395,7 +393,14 @@ export class SuggestionItem extends React.Component {
     );
   }
 }
+SuggestionItem.defaultProps = {
+  getSuggestionItemProps: () => undefined,
+};
 
+SuggestionItem.propTypes = {
+  suggestion: PropTypes.object.isRequired,
+  getSuggestionItemProps: PropTypes.func,
+};
 /**
  * An editor for a profile. Takes a list of fields, the profile, a Cells object, a title, and a submit function.
  *
