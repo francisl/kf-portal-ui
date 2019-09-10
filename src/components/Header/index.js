@@ -38,7 +38,9 @@ const ExploreDataIconStyled = styled(ExploreDataIcon)`
   fill: currentColor;
 `;
 
-const BetaNavLink = styled(NavLink)`
+const BetaNavLink = styled(NavLink, {
+  shouldForwardProp: prop => !['currentPathName', 'theme'].includes(prop),
+})`
   &:after {
     content: 'beta';
     vertical-align: super;

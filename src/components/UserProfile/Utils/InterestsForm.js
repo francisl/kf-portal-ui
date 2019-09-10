@@ -6,8 +6,12 @@ import { DISEASE_AREAS, STUDY_SHORT_NAMES } from 'common/constants';
 
 const InterestsDisplay = ({ profile, onClick = i => null, Cell = inter => inter }) => (
   <Row flexWrap="wrap" pt={2} pb={2}>
-    {profile.interests.map(inter => (
-      <Tag onClick={() => onClick(inter)} style={{ textTransform: 'capitalize' }}>
+    {profile.interests.map((inter, index) => (
+      <Tag
+        key={`${inter}-${index}`}
+        onClick={() => onClick(inter)}
+        style={{ textTransform: 'capitalize' }}
+      >
         {Cell(inter)}
       </Tag>
     ))}

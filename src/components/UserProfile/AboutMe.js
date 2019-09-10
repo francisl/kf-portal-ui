@@ -26,7 +26,7 @@ const AboutMe = ({ profile, Gate, api }) => {
         fields={['bio', 'story']}
         title={'Profile'}
         Cell={f => (
-          <div style={{ marginBottom: '1em' }}>
+          <div key={f} style={{ marginBottom: '1em' }}>
             <h3 style={{ color: 'rgb(43, 56, 143)' }}>My {f}</h3>
             <div>{profile[f]}</div>
           </div>
@@ -55,7 +55,7 @@ const AboutMe = ({ profile, Gate, api }) => {
       <Gate
         fields={['interests']}
         title={'Research Interests'}
-        Cell={f => <InterestsDisplay profile={profile} />}
+        Cell={f => <InterestsDisplay key={f} profile={profile} />}
         editorCells={{
           interests: profile => <InterestsForm profile={profile} api={api} />,
         }}

@@ -1,7 +1,6 @@
 import styled from 'react-emotion';
 import { Link } from 'react-router-dom';
 import { space } from 'styled-system';
-
 import Row from 'uikit/Row';
 import Gravtar from 'uikit/Gravatar';
 import { DropdownContainer, DropdownOptionsContainer } from 'uikit/Dropdown';
@@ -9,7 +8,9 @@ import { DropdownLabelContainer } from 'uikit/Dropdown/ui';
 import { applyDefaultStyles } from 'uikit/Core';
 import ExternalLink from 'uikit/ExternalLink';
 
-export const NavLink = styled(Link)`
+export const NavLink = styled(Link, {
+  shouldForwardProp: prop => !['currentPathName', 'theme'].includes(prop),
+})`
   ${({ theme }) => theme.navLink};
   color: ${({ theme }) => theme.primary};
   ${({ currentPathName, to, theme }) => (currentPathName === to ? theme.linkButtonActive : '')};
