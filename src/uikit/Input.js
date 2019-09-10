@@ -4,6 +4,21 @@ import Row from 'uikit/Row';
 import SearchIcon from 'react-icons/lib/fa/search';
 import FaTimesCircleO from 'react-icons/lib/fa/times-circle';
 import { flex } from 'styled-system';
+
+/*
+  There are a lot of warnings induced by the  "...props festival".
+  This festival occurs in some of our external libraries, as well
+  which makes it almost impossible at the moment to fix them correctly.
+  So, for the sake of depolluting the warnings, I'll use the following method. 
+*/
+const BLACK_LISTED_PROP_KEYS = ['componentRef'];
+const removeUnwantedProps = (incomingProps = {}) => {
+  const filteredEntries = Object.entries(incomingProps).filter(
+    ([key]) => !BLACK_LISTED_PROP_KEYS.includes(key),
+  );
+  return Object.fromEntries(filteredEntries);
+};
+
 /*
 this component should implement the same interface as <input> from react-dom
 with some additional props
@@ -51,7 +66,7 @@ export const FilterInput = ({
   return (
     <FilterInputWrapper disabled={disabled} className={className}>
       {LeftIcon && <LeftIcon className={'icon-left'} />}
-      <input {...{ value, disabled, ...props }} ref={ref} autoFocus />
+      <input {...{ value, disabled, ...removeUnwantedProps(props) }} ref={ref} autoFocus />
       {value && value.length && <RightIcon className={'icon-right'} onClick={clearInput} />}
     </FilterInputWrapper>
   );
