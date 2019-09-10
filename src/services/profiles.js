@@ -47,36 +47,38 @@ const DEFAULT_FIELDS = `
 const url = urlJoin(personaApiRoot, 'graphql');
 
 export const getProfile = api => async (id = null) => {
-
   const apiCall =
     id === null
-      ? await api({   //if we're not asking about an ID, query profile
-        url,
-        body: {
-          query: `
+      ? await api({
+          //if we're not asking about an ID, query profile
+          url,
+          body: {
+            query: `
               query {
                 self {
                   ${DEFAULT_FIELDS}
               }
             }
           `,
-        },
-      })
-    : await api({ //if we're asking about an ID, query user
-      url,
-      body: {
-        query: `
-              query {
-                user(_id: "${id}") {
+          },
+        })
+      : await api({
+          //if we're asking about an ID, query user
+          url,
+          body: {
+            variables: { _id: id },
+            query: `
+            query($_id: MongoID!){
+              user(_id:$_id){
                   ${DEFAULT_FIELDS}
               }
             }
           `,
-      },
-    });
+          },
+        });
 
   let profile;
-  if(id === null) {
+  if (id === null) {
     profile = apiCall.data.self;
   } else {
     profile = apiCall.data.user;
@@ -109,7 +111,6 @@ export const createProfile = api => async ({ egoId, lastName, firstName, email }
 };
 
 export const updateProfile = api => async ({ user }) => {
-
   const {
     data: {
       userUpdate: { record },
@@ -129,7 +130,6 @@ export const updateProfile = api => async ({ user }) => {
       `,
     },
   });
-
 
   return record;
 };
@@ -177,7 +177,8 @@ export const getTags = api => async ({ filter, size }) => {
     },
   });
 
-  console.log("with this input, "+filter+", get tags returned this"); console.log(tags)
+  console.log('with this input, ' + filter + ', get tags returned this');
+  console.log(tags);
 
   return tags;
 };
