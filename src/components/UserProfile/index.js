@@ -39,7 +39,7 @@ export default class UserProfile extends React.Component {
     this.setState({ profile: updatedProfile });
   };
 
-  fetchedProfile = async () => {
+  fetchProfile = async () => {
     const { api, userID } = this.props;
     let fetchedProfile;
     try {
@@ -51,17 +51,16 @@ export default class UserProfile extends React.Component {
   };
 
   async componentDidMount() {
-    this.fetchedProfile();
+    this.fetchProfile();
   }
 
   async componentDidUpdate(prevProps) {
     if (isProfileToBeRefreshed(prevProps.location, this.props.location)) {
-      this.fetchedProfile();
+      this.fetchProfile();
     }
   }
 
   render() {
-    // const values needed to build the page...
     const canEdit = this.props.userID === null;
     const location = this.props.location;
     const { profile, error } = this.state;
