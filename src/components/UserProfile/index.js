@@ -1,64 +1,30 @@
-import * as React from 'react';
-import { get } from 'lodash';
+import React from 'react';
 import { css } from 'react-emotion';
-
 import { getProfile, updateProfile } from 'services/profiles';
-import { ROLES } from 'common/constants';
-
 import AboutMe from './AboutMe';
 import RoleIconButton from '../RoleIconButton';
 import Error from '../Error';
 import { EntityContent } from '../EntityPage';
-import SecondaryNavMenu from '../../uikit/SecondaryNav/SecondaryNavMenu';
-import SecondaryNavContent from '../../uikit/SecondaryNav/SecondaryNavContent';
+import SecondaryNavMenu from 'uikit/SecondaryNav/SecondaryNavMenu';
+import SecondaryNavContent from 'uikit/SecondaryNav/SecondaryNavContent';
 import makeGate from './Utils/makeGate';
 import EntityContainer from '../EntityPage/EntityContainer';
 import EntityActionBar from '../EntityPage/EntityActionBar';
 import AddressForm from './Utils/AddressForm';
 import { FieldContainer, LabelSelect } from './Utils/Editor';
-import { WhiteButton } from '../../uikit/Button';
-import ExternalLink from '../../uikit/ExternalLink';
+import { WhiteButton } from 'uikit/Button';
+import ExternalLink from 'uikit/ExternalLink';
 import Account from './Account';
-import Gravatar from '../../uikit/Gravatar';
-
-const getRoleTypeFromProfile = (profile, defaultValue = '') =>
-  get(profile, ['roles', 0], defaultValue);
-
-export const ProfileImage = ({ email = '', style = {} }) => (
-  <Gravatar
-    style={{
-      height: '173px',
-      width: '173px',
-      borderRadius: '50%',
-      border: '5px solid #fff',
-      ...style,
-    }}
-    email={email}
-  />
-);
-
-export const userProfileBackground = (
-  loggedInUser,
-  { showBanner = true, gradientDirection = 'right' } = {},
-) => {
-  const role = ROLES.find(x => x.type === getRoleTypeFromProfile(loggedInUser)) || {};
-  const banner = get(role, 'banner', '');
-  const profileColors = get(role, 'profileColors', {});
-  return css`
-    background-position-x: right;
-    background-repeat: no-repeat;
-    background-image: ${showBanner ? `url(${banner}), ` : ``}
-      linear-gradient(
-        to ${gradientDirection},
-        ${profileColors.gradientDark} 33%,
-        ${profileColors.gradientMid} 66%,
-        ${profileColors.gradientLight}
-      );
-  `;
-};
+import {
+  getRoleTypeFromProfile,
+  userProfileBackground,
+  isProfileToBeRefreshed,
+} from './Utils/utils';
+import { ProfileImage } from './Utils/ProfileImage';
+import inRange from 'lodash/inRange';
 
 export default class UserProfile extends React.Component {
-  state = { profile: null };
+  state = { profile: null, error: null };
 
   submit = async values => {
     const { api } = this.props;
@@ -73,20 +39,40 @@ export default class UserProfile extends React.Component {
     this.setState({ profile: updatedProfile });
   };
 
-  async componentDidMount() {
+  fetchedProfile = async () => {
     const { api, userID } = this.props;
-    const fetchedProfile = await getProfile(api)(userID);
-    this.setState({ profile: fetchedProfile });
+    let fetchedProfile;
+    try {
+      fetchedProfile = await getProfile(api)(userID);
+      this.setState({ profile: fetchedProfile, error: null });
+    } catch (e) {
+      this.setState({ error: e });
+    }
+  };
+
+  async componentDidMount() {
+    this.fetchedProfile();
+  }
+
+  async componentDidUpdate(prevProps) {
+    if (isProfileToBeRefreshed(prevProps.location, this.props.location)) {
+      this.fetchedProfile();
+    }
   }
 
   render() {
     // const values needed to build the page...
     const canEdit = this.props.userID === null;
     const location = this.props.location;
-    const { profile } = this.state;
+    const { profile, error } = this.state;
 
-    if (profile === null) return <div>Loading...</div>;
-    else if (Object.entries(profile).length === 0 && profile.constructor === Object) {
+    if (error) {
+      const errorStatus = error.response.status;
+      const text = inRange(errorStatus, 400) ? error.message : undefined;
+      return <Error text={text} />;
+    } else if (profile === null) {
+      return <div>Loading...</div>;
+    } else if (Object.keys(profile || {}).length === 0) {
       return <Error text={'404: Page not found.'} />;
     }
 

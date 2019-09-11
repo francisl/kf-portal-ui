@@ -120,10 +120,24 @@ const Header = ({
                   onToggle={toggleDropdown}
                   onOuterClick={() => setDropdownVisibility(false)}
                   items={[
-                    <DropdownLink onClick={toggleDropdown} to={`/profile#aboutMe`}>
+                    <DropdownLink
+                      onClick={toggleDropdown}
+                      to={{
+                        pathname: `/profile`,
+                        hash: '#aboutMe',
+                        state: { refreshProfile: true },
+                      }}
+                    >
                       <Trans>My Profile</Trans>
                     </DropdownLink>,
-                    <DropdownLink onClick={toggleDropdown} to={`/profile#settings`}>
+                    <DropdownLink
+                      onClick={toggleDropdown}
+                      to={{
+                        pathname: `/profile`,
+                        hash: '#settings',
+                        state: { refreshProfile: true },
+                      }}
+                    >
                       Settings
                     </DropdownLink>,
                     <DropdownLink
