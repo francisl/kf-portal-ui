@@ -9,7 +9,16 @@ const SecondaryNavTab = ({ name, target, location: { hash } = {} }) => {
   return (
     <li>
       <Column>
-        <Link to={`#${target}`} className={hash === `#${target}` ? 'active' : css`border-bottom: solid 5px transparent;`}>
+        <Link
+          to={`#${target}`}
+          className={
+            hash === `#${target}`
+              ? 'active'
+              : css`
+                  border-bottom: solid 5px transparent;
+                `
+          }
+        >
           {name}
         </Link>
       </Column>
@@ -20,7 +29,7 @@ const SecondaryNavTab = ({ name, target, location: { hash } = {} }) => {
 SecondaryNavTab.propTypes = {
   name: PropTypes.string.isRequired,
   target: PropTypes.string.isRequired,
-  location: PropTypes.objectOf({ hash: PropTypes.string }).isRequired,
+  location: PropTypes.shape({ hash: PropTypes.string }).isRequired,
 };
 
 export default SecondaryNavTab;

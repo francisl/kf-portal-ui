@@ -46,7 +46,7 @@ class SecondaryNavMenu extends React.Component {
 
 SecondaryNavMenu.propTypes = {
   tabs: PropTypes.arrayOf(
-    PropTypes.objectOf({ name: PropTypes.string.isRequired, hash: PropTypes.string.isRequired })
+    PropTypes.shape({ name: PropTypes.string.isRequired, hash: PropTypes.string.isRequired })
       .isRequired,
   ).isRequired,
   defaultHash: PropTypes.string,
