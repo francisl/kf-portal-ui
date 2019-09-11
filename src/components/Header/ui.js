@@ -9,7 +9,7 @@ import { applyDefaultStyles } from 'uikit/Core';
 import ExternalLink from 'uikit/ExternalLink';
 
 export const NavLink = styled(Link, {
-  shouldForwardProp: prop => !['currentPathName', 'theme'].includes(prop),
+  shouldForwardProp: prop => !['currentPathName'].includes(prop),
 })`
   ${({ theme }) => theme.navLink};
   color: ${({ theme }) => theme.primary};
@@ -52,7 +52,7 @@ export const NavbarDropdownWrapper = styled(DropdownContainer)`
 `;
 
 export const DropdownLink = styled(Link, {
-  shouldForwardProp: prop => !['separated', 'theme'].includes(prop),
+  shouldForwardProp: prop => !['separated'].includes(prop),
 })`
   color: ${({ theme }) => theme.greyScale2};
   text-decoration: none;
@@ -86,7 +86,7 @@ export const DropdownExternalLink = applyDefaultStyles(
     }
   `,
   {
-    shouldForwardProp: prop => !['theme', 'borderColor', 'separated'].includes(prop),
+    shouldForwardProp: prop => !['borderColor', 'separated'].includes(prop),
   },
 );
 
