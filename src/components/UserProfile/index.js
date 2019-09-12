@@ -19,6 +19,7 @@ import {
   getRoleTypeFromProfile,
   userProfileBackground,
   isProfileToBeRefreshed,
+  injectDefaultValuesToProfile,
 } from './Utils/utils';
 import { ProfileImage } from './Utils/ProfileImage';
 import inRange from 'lodash/inRange';
@@ -75,13 +76,18 @@ export default class UserProfile extends React.Component {
       return <Error text={'404: Page not found.'} />;
     }
 
-    const Gate = makeGate(profile, canEdit, this.submit);
+    const profileUpdatedWithDefaultValues = injectDefaultValuesToProfile(profile, {
+      bio: 'Share information about your professional background and your research interests.',
+      story: 'Share information about your professional background and your research interests.',
+    });
+
+    const Gate = makeGate(profileUpdatedWithDefaultValues, canEdit, this.submit);
 
     return (
       <EntityContainer>
         <div
           className={css`
-            ${userProfileBackground(profile)};
+            ${userProfileBackground(profileUpdatedWithDefaultValues)};
             min-height: 330px;
             width: 100%;
             align-items: center;
@@ -90,7 +96,7 @@ export default class UserProfile extends React.Component {
           `}
         >
           <div style={{ display: 'flex', flexDirection: 'row', width: '76%', maxWidth: '1400px' }}>
-            <ProfileImage style={{ flex: 'none' }} email={profile.email} />
+            <ProfileImage style={{ flex: 'none' }} email={profileUpdatedWithDefaultValues.email} />
             <div
               style={{
                 paddingLeft: '15px',
@@ -101,7 +107,7 @@ export default class UserProfile extends React.Component {
             >
               <RoleIconButton
                 style={{ flexShrink: 1 }}
-                roleType={getRoleTypeFromProfile(profile)}
+                roleType={getRoleTypeFromProfile(profileUpdatedWithDefaultValues)}
               />
               <Gate
                 style={{ color: 'rgb(255, 255, 255)' }}
@@ -127,17 +133,24 @@ export default class UserProfile extends React.Component {
                         textDecoration: 'none',
                       }}
                     >
-                      {profile.firstName} {profile.lastName}
+                      {profileUpdatedWithDefaultValues.firstName}{' '}
+                      {profileUpdatedWithDefaultValues.lastName}
                     </h1>
                   ),
                   jobTitle: keyBuiltFromField => (
                     <div key={keyBuiltFromField} style={{ fontSize: '1.4em' }}>
-                      {profile.jobTitle}
+                      {profileUpdatedWithDefaultValues.jobTitle}
                     </div>
                   ),
                   'city state country': keyBuiltFromField => (
                     <div key={keyBuiltFromField} style={{ marginTop: '1em' }}>
-                      {[profile.city, profile.state, profile.country].filter(Boolean).join(', ')}
+                      {[
+                        profileUpdatedWithDefaultValues.city,
+                        profileUpdatedWithDefaultValues.state,
+                        profileUpdatedWithDefaultValues.country,
+                      ]
+                        .filter(Boolean)
+                        .join(', ')}
                     </div>
                   ),
                 }}
@@ -148,7 +161,10 @@ export default class UserProfile extends React.Component {
                   'title, gravatar': (profile, keyBuiltFromField) => (
                     <FieldContainer key={keyBuiltFromField}>
                       <div>
-                        <ProfileImage style={{ flex: 'none' }} email={profile.email || ''} />
+                        <ProfileImage
+                          style={{ flex: 'none' }}
+                          email={profileUpdatedWithDefaultValues.email || ''}
+                        />
                         <WhiteButton mt="4px" w="170px">
                           <ExternalLink href="https://en.gravatar.com/site/login">
                             change gravatar
@@ -157,9 +173,9 @@ export default class UserProfile extends React.Component {
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gridGap: '1em' }}>
                         <LabelSelect
-                          value={profile.title}
+                          value={profileUpdatedWithDefaultValues.title}
                           field={'title'}
-                          profile={profile}
+                          profile={profileUpdatedWithDefaultValues}
                           label={'Title'}
                         >
                           <option value="">N/A</option>
@@ -170,8 +186,8 @@ export default class UserProfile extends React.Component {
                         </LabelSelect>
                         <LabelSelect
                           field={'roles'}
-                          value={getRoleTypeFromProfile(profile)}
-                          profile={profile}
+                          value={getRoleTypeFromProfile(profileUpdatedWithDefaultValues)}
+                          profile={profileUpdatedWithDefaultValues}
                           label={'Role'}
                         >
                           <option value="research">Researcher</option>
@@ -199,16 +215,16 @@ export default class UserProfile extends React.Component {
         {canEdit && (
           <EntityContent style={{ marginRight: 0 }}>
             <SecondaryNavContent target="aboutMe" location={location}>
-              <AboutMe profile={profile} Gate={Gate} api={this.props.api} />
+              <AboutMe profile={profileUpdatedWithDefaultValues} Gate={Gate} api={this.props.api} />
             </SecondaryNavContent>
             <SecondaryNavContent target="settings" location={location}>
-              <Account profile={profile} submit={this.submit} />
+              <Account profile={profileUpdatedWithDefaultValues} submit={this.submit} />
             </SecondaryNavContent>
           </EntityContent>
         )}
         {!canEdit && (
           <EntityContent target="aboutMe" location={location}>
-            <AboutMe profile={profile} Gate={Gate} />
+            <AboutMe profile={profileUpdatedWithDefaultValues} Gate={Gate} />
           </EntityContent>
         )}
       </EntityContainer>
