@@ -39,18 +39,3 @@ export const isProfileToBeRefreshed = (prevLocation = {}, location = {}) => {
     (!doesPrevLocationAsksToBeRefreshed && doesCurrentLocationAsksToBeRefreshed)
   );
 };
-
-export const injectDefaultValuesToProfile = (originalProfile, keyToDefaultValues) => {
-  if (!keyToDefaultValues) {
-    return originalProfile;
-  }
-
-  const copyOfOriginalProfile = { ...originalProfile };
-  Object.entries(keyToDefaultValues).forEach(([key, defaultValue]) => {
-    //for now let's focus on primitives only.
-    if (!copyOfOriginalProfile[key]) {
-      copyOfOriginalProfile[key] = defaultValue;
-    }
-  });
-  return copyOfOriginalProfile;
-};

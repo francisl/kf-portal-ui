@@ -12,28 +12,103 @@ import MapMarkerIcon from '../../icons/MapMarkerIcon';
 import EnvelopeIcon from '../../icons/EnvelopeIcon';
 import PhoneIcon from '../../icons/PhoneIcon';
 import CommunityIcon from '../../icons/CommunityIcon';
-
+import { css } from 'emotion';
 import InterestsForm, { InterestsDisplay } from './Utils/InterestsForm';
 
-const ContactContainer = props => (
-  <div style={{ display: 'grid', gridTemplateColumns: '1em auto', gridGap: '1em' }} {...props} />
+const defaultTextCss = css({
+  fontFamily: '"Open Sans", sans-serif',
+  fontSize: '13px',
+  fontStyle: 'italic',
+  lineHeight: 1.85,
+  textAlign: 'left',
+  color: 'rgb(116, 117, 125)',
+  fontWeight: 'normal',
+  margin: '0px',
+  padding: '0px',
+});
+
+const socialIconCss = css({
+  width: 28,
+  height: 28,
+});
+
+const FIELDS_TO_ICON = {
+  website: <WebsiteIcon height={28} width={28} />,
+  googleScholarID: <GoogleScholarIcon height={28} width={28} />,
+  linkedin: <LinkedInIcon height={28} width={28} />,
+  facebook: <SocialIcon url={kfFacebook} className={socialIconCss} />,
+  twitter: <SocialIcon url={kfTwitter} className={socialIconCss} />,
+  github: <SocialIcon url={kfGithub} className={socialIconCss} />,
+  orchid: <img alt="ORCHID" src={orchidIcon} height={28} />,
+};
+
+const contactContainerCss = css({
+  display: 'grid',
+  gridTemplateColumns: '1em auto',
+  gridGap: '1em',
+  marginBottom: '10px',
+});
+
+const findMeContainerCss = css({ flexDirection: 'row', display: 'flex' });
+const findMeExternalLinkContainerCss = css({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-around',
+  paddingLeft: '1em',
+});
+
+const aboutMeContainerCss = css({
+  display: 'grid',
+  gridTemplateColumns: '65% auto',
+  gridGap: '2em',
+  marginTop: '15px',
+});
+
+const bioStoryContainerCss = css({ marginBottom: '1em' });
+
+const addrFieldCss = css({ lineHeight: '25.62px' });
+
+const boxStyle = {
+  boxShadow: 'rgb(160, 160, 163) 0px 0px 2.9px 0.1px',
+  marginBottom: '15px',
+  padding: '16px',
+  borderRadius: '5px',
+};
+
+const showBox = show => (show ? boxStyle : null);
+
+const ContactContainer = ({ children }) => (
+  <div className={contactContainerCss} children={children} />
 );
 
-const AboutMe = ({ profile, Gate, api }) => {
+const AboutMe = ({ profile, Gate, api, isEditingMode }) => {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '65% auto', gridGap: '2em' }}>
+    <div className={aboutMeContainerCss}>
       <Gate
         fields={['bio', 'story']}
         title={'Profile'}
-        Cell={f => (
-          <div key={f} style={{ marginBottom: '1em' }}>
-            <h3 style={{ color: 'rgb(43, 56, 143)' }}>My {f}</h3>
-            <div>{profile[f]}</div>
-          </div>
-        )}
+        Cell={f => {
+          const isDefaultUsed = isEditingMode && !Boolean(profile[f]);
+          return (
+            <div key={f} className={bioStoryContainerCss}>
+              <h3 style={{ color: 'rgb(43, 56, 143)' }}>My {f}</h3>
+              <div className={isDefaultUsed ? defaultTextCss : ''}>
+                {isDefaultUsed
+                  ? {
+                      bio:
+                        'Share information about your professional background and your research interests.',
+                      story:
+                        'Share information about your professional background and your research interests.',
+                    }[f]
+                  : profile[f]}
+              </div>
+            </div>
+          );
+        }}
         editorCells={{
-          bio: profile => (
+          bio: (profile, keyBuiltFromField) => (
             <LabelTextArea
+              key={keyBuiltFromField}
               field={'bio'}
               profile={profile}
               label={'Bio'}
@@ -41,8 +116,9 @@ const AboutMe = ({ profile, Gate, api }) => {
               type={'text'}
             />
           ),
-          story: profile => (
+          story: (profile, keyBuiltFromField) => (
             <LabelTextArea
+              key={keyBuiltFromField}
               field={'story'}
               profile={profile}
               label={'Story'}
@@ -53,11 +129,14 @@ const AboutMe = ({ profile, Gate, api }) => {
         }}
       />
       <Gate
+        style={showBox(isEditingMode)}
         fields={['interests']}
         title={'Research Interests'}
-        Cell={f => <InterestsDisplay key={f} profile={profile} />}
+        Cell={f => <InterestsDisplay key={f} profile={profile} isEditingMode={isEditingMode} />}
         editorCells={{
-          interests: profile => <InterestsForm profile={profile} api={api} />,
+          interests: profile => (
+            <InterestsForm profile={profile} api={api} isEditingMode={isEditingMode} />
+          ),
         }}
       />
       <Gate
@@ -77,13 +156,13 @@ const AboutMe = ({ profile, Gate, api }) => {
               <ContactContainer key={keyBuiltFromField}>
                 <MapMarkerIcon height={'17px'} />
                 <div>
-                  <div style={{ lineHeight: '25.62px' }}>
+                  <div className={addrFieldCss}>
                     {[profile.addressLine1, profile.addressLine2].filter(ele => !!ele).join(', ')}
                   </div>
-                  <div style={{ lineHeight: '25.62px' }}>
+                  <div className={addrFieldCss}>
                     {[profile.city, profile.state, profile.country].filter(ele => !!ele).join(', ')}
                   </div>
-                  {profile.zip && <div style={{ lineHeight: '25.62px' }}>{profile.zip}</div>}
+                  {profile.zip && <div className={addrFieldCss}>{profile.zip}</div>}
                 </div>
               </ContactContainer>
             ) : null;
@@ -107,45 +186,58 @@ const AboutMe = ({ profile, Gate, api }) => {
           addr: profile => <AddressForm profile={profile} />,
         }}
       />
-      <Gate
-        fields={[
-          'website',
-          'googleScholarId',
-          'linkedin',
-          'facebook',
-          'twitter',
-          'github',
-          'orchid',
-        ]}
-        title={'Find me on'}
-        Cell={f => {
-          const icons = {
-            website: <WebsiteIcon height={28} width={28} />,
-            googleScholarID: <GoogleScholarIcon height={28} width={28} />,
-            linkedin: <LinkedInIcon height={28} width={28} />,
-            facebook: <SocialIcon url={kfFacebook} style={{ width: 28, height: 28 }} />,
-            twitter: <SocialIcon url={kfTwitter} style={{ width: 28, height: 28 }} />,
-            github: <SocialIcon url={kfGithub} style={{ width: 28, height: 28 }} />,
-            orchid: <img alt="ORCHID" src={orchidIcon} height={28} />,
-          };
-
-          return (
-            <div style={{ flexDirection: 'row', display: 'flex' }}>
-              <div>{icons[f]}</div>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-around',
-                  paddingLeft: '1em',
-                }}
-              >
-                <ExternalLink href={profile[f]}>{profile[f]}</ExternalLink>
+      {isEditingMode &&
+      ['website', 'googleScholarId', 'linkedin', 'facebook', 'twitter', 'github', 'orchid'].every(
+        profileKey => !Boolean(profile[profileKey]),
+      ) ? (
+        <Gate
+          style={boxStyle}
+          fields={[
+            'findMe',
+            'website',
+            'googleScholarId',
+            'linkedin',
+            'facebook',
+            'twitter',
+            'github',
+            'orchid',
+          ]}
+          title={'Find me on'}
+          Cell={f => {
+            return (
+              <div className={defaultTextCss} key={f}>
+                {
+                  'Add links to your personal channels such as Google Scholar, ORCID ID, GitHub, LinkedIn, Twitter and Facebook.'
+                }
               </div>
-            </div>
-          );
-        }}
-      />
+            );
+          }}
+        />
+      ) : (
+        <Gate
+          style={showBox(isEditingMode)}
+          fields={[
+            'website',
+            'googleScholarId',
+            'linkedin',
+            'facebook',
+            'twitter',
+            'github',
+            'orchid',
+          ]}
+          title={'Find me on'}
+          Cell={f => {
+            return (
+              <div key={f} className={findMeContainerCss}>
+                <div>{FIELDS_TO_ICON[f]}</div>
+                <div className={findMeExternalLinkContainerCss}>
+                  <ExternalLink href={profile[f]}>{profile[f]}</ExternalLink>
+                </div>
+              </div>
+            );
+          }}
+        />
+      )}
     </div>
   );
 };

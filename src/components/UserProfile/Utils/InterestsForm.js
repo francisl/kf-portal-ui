@@ -3,20 +3,47 @@ import React from 'react';
 import Row from '../../../uikit/Row';
 import { LabelSelect } from './Editor';
 import { DISEASE_AREAS, STUDY_SHORT_NAMES } from 'common/constants';
+import { css } from 'emotion';
 
-const InterestsDisplay = ({ profile, onClick = i => null, Cell = inter => inter }) => (
-  <Row flexWrap="wrap" pt={2} pb={2}>
-    {profile.interests.map((inter, index) => (
-      <Tag
-        key={`${inter}-${index}`}
-        onClick={() => onClick(inter)}
-        style={{ textTransform: 'capitalize' }}
-      >
-        {Cell(inter)}
-      </Tag>
-    ))}
-  </Row>
-);
+const defaultTextCss = css({
+  fontFamily: '"Open Sans", sans-serif',
+  fontSize: '13px',
+  fontStyle: 'italic',
+  lineHeight: 1.85,
+  textAlign: 'left',
+  color: 'rgb(116, 117, 125)',
+  fontWeight: 'normal',
+  margin: '0px',
+  padding: '0px',
+});
+
+const InterestsDisplay = ({
+  profile,
+  onClick = i => null,
+  Cell = inter => inter,
+  isEditingMode,
+}) => {
+  if ((profile.interests || profile.interests.length === 0) && isEditingMode) {
+    return (
+      <div className={defaultTextCss}>
+        {'Please specify Kids First studies, diseases and other areas that interest you.'}
+      </div>
+    );
+  }
+  return (
+    <Row flexWrap="wrap" pt={2} pb={2}>
+      {profile.interests.map((inter, index) => (
+        <Tag
+          key={`${inter}-${index}`}
+          onClick={() => onClick(inter)}
+          style={{ textTransform: 'capitalize' }}
+        >
+          {Cell(inter)}
+        </Tag>
+      ))}
+    </Row>
+  );
+};
 
 export { InterestsDisplay };
 
@@ -70,6 +97,7 @@ export default class InterestsForm extends React.Component {
             </div>
           )}
           onClick={e => this.deleteInterest(e)}
+          isEditingMode={this.props.isEditingMode}
         />
         <InterestSuggestions
           onChange={value => this.addInterest(value)}

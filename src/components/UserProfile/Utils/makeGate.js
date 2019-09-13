@@ -2,6 +2,7 @@
 import * as React from 'react';
 import Editor from './Editor';
 import Title from './Title';
+import { css } from 'emotion';
 
 const filters = {
   research: [],
@@ -16,6 +17,11 @@ const flexStyle = {
   alignItems: 'flex-start',
   flexDirection: 'column',
 };
+
+const titlePlusButtonWrapper = css({
+  display: 'flex',
+  alignItems: 'baseline',
+});
 
 /**
  * Intentionally not testing for undefined: if we have a composite accessor, profile[f] will return undefined.
@@ -49,9 +55,16 @@ function isEmpty(val) {
  * @param profile The profile to display/edit
  * @param canEdit Can the current user edit the viewed profile?
  * @param submit  The submit function to save changes to the profile
+ * @param editModeFieldOrDefault value to display when targeted field is empty
  * @returns {Function}  Returns a Gate component appropriate for canEdit and for the profile's roles.
  */
-const makeGate = (profile, canEdit, submit) => ({
+const makeGate = (
+  profile,
+  canEdit,
+  submit,
+  fieldsHavingDefaultValues = [],
+  fieldsToExcludeFromEditor = [],
+) => ({
   fields,
   title,
   Cell = f => (
@@ -68,9 +81,12 @@ const makeGate = (profile, canEdit, submit) => ({
     else return !filters[profile.roles[0]].includes(f);
   });
 
-  const display = fields.map((f, index) =>
-    isEmpty(profile[f]) ? '' : f in Cells ? Cells[f](`key-${f}-index-${index}`) : Cell(f),
-  );
+  const display = fields.map((f, index) => {
+    if (isEmpty(profile[f]) && !(canEdit && fieldsHavingDefaultValues.includes(f))) {
+      return '';
+    }
+    return f in Cells ? Cells[f](`key-${f}-index-${index}`) : Cell(f);
+  });
 
   const EditButton = canEdit // EditButton is either empty string or an actual edit button depending on canEdit
     ? //Editor is actually just a button that says edit... until you click on sait button.
@@ -78,7 +94,7 @@ const makeGate = (profile, canEdit, submit) => ({
         return (
           <Editor
             profile={profile}
-            fields={fields}
+            fields={fields.filter(key => !fieldsToExcludeFromEditor.includes(key))}
             title={title}
             Cells={editorCells}
             submit={submit}
@@ -97,10 +113,10 @@ const makeGate = (profile, canEdit, submit) => ({
 
   return (
     <div style={style}>
-      <Title style={flexStyle}>
-        {title}
+      <div className={titlePlusButtonWrapper}>
+        <Title style={flexStyle}>{title}</Title>
         <EditButton fields={fields} />
-      </Title>
+      </div>
       {display}
     </div>
   );
