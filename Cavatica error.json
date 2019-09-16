@@ -1,0 +1,49 @@
+{
+  "config": {
+    "transformRequest": {},
+    "transformResponse": {},
+    "timeout": 0,
+    "xsrfCookieName": "XSRF-TOKEN",
+    "xsrfHeaderName": "X-XSRF-TOKEN",
+    "maxContentLength": -1,
+    "headers": {
+      "Accept": "application/json, text/plain, */*",
+      "Content-Type": "application/json;charset=utf-8",
+      "Authorization": "Bearer eyJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE1Njg2NDM0MzgsImV4cCI6MTU2ODcyOTgzOCwic3ViIjoiMWU5ZGNiNTItNjkxNi00NjE5LThkN2ItYWYyNzFmMTIzY2YyIiwiaXNzIjoiZWdvIiwiYXVkIjpbXSwianRpIjoiOWNhNGEwNDctZjNmYi00MTA1LTgxNzItYWNkMTdmNmU0YTQ5IiwiY29udGV4dCI6eyJ1c2VyIjp7Im5hbWUiOiJqdWxpZW4uYmVydWJlQGdtYWlsLmNvbSIsImVtYWlsIjoianVsaWVuLmJlcnViZUBnbWFpbC5jb20iLCJzdGF0dXMiOiJBcHByb3ZlZCIsImZpcnN0TmFtZSI6Ikp1bGllbiIsImxhc3ROYW1lIjoiQsOpcnViw6kiLCJjcmVhdGVkQXQiOiIyMDE5LTAxLTMxIDIxOjI3OjUzLjUwNiIsImxhc3RMb2dpbiI6IjIwMTktMDktMTYgMDI6MTc6MTgiLCJwcmVmZXJyZWRMYW5ndWFnZSI6bnVsbCwiZ3JvdXBzIjpbXSwicm9sZXMiOlsiQURNSU4iXSwicGVybWlzc2lvbnMiOltdfX19.FR2h-Ups0ah4ZQsRqdVKt2URnf0tJ3QztN1GOdcxoRr-m2QbcwsOgKlR7hpqNtO_WYqWXp6G4fTxaPqpFvZ2qCwRDlZ7q3wy_nAy2mS_hO85RnaY8V9ExxxC5fAivnUu2I1pzHEp-a67Jc8jB4umlzT1XlhVWbFrJfZWlDFlIZ48U--9lFYDpAUTBmlSYq67eKy9QAkqpprE843qTdj-LDipXkH_JrUHy0EIuotBudgTHWrFv9NunlRzt3T7M354Jcr87ssuk_YxPia6TpLGgrsGtLfOA0JdWi3bfbfZDmVGc0KUx4iDwJxhT9Y0TA6JSzBuYdPhnAEe6yjuW_uSZg"
+    },
+    "method": "post",
+    "url": "https://key-manager-qa.kidsfirstdrc.org/cavatica",
+    "data": "{\"path\":\"/projects-PATATE\",\"method\":\"GET\"}"
+  },
+  "request": {},
+  "response": {
+    "data": {
+      "exception": "FileNotFoundException",
+      "stack": "sun.reflect.NativeConstructorAccessorImpl.newInstance0: -2\nsun.reflect.NativeConstructorAccessorImpl.newInstance: 62\nsun.reflect.DelegatingConstructorAccessorImpl.newInstance: 45\njava.lang.reflect.Constructor.newInstance: 423\nsun.net.www.protocol.http.HttpURLConnection$10.run: 1944\nsun.net.www.protocol.http.HttpURLConnection$10.run: 1939\njava.security.AccessController.doPrivileged: -2\nsun.net.www.protocol.http.HttpURLConnection.getChainedException: 1938\nsun.net.www.protocol.http.HttpURLConnection.getInputStream0: 1508\nsun.net.www.protocol.http.HttpURLConnection.getInputStream: 1492\nsun.net.www.protocol.https.HttpsURLConnectionImpl.getInputStream: 263\nio.kidsfirst.keys.cavatica.proxy.CavaticaProxy.sendCavaticaRequest: 127\nio.kidsfirst.keys.cavatica.proxy.CavaticaProxy.processEvent: 77\nio.kidsfirst.keys.core.LambdaRequestHandler.handleRequest: 31\nsun.reflect.NativeMethodAccessorImpl.invoke0: -2\nsun.reflect.NativeMethodAccessorImpl.invoke: 62\nsun.reflect.DelegatingMethodAccessorImpl.invoke: 43\njava.lang.reflect.Method.invoke: 498\nlambdainternal.EventHandlerLoader$PojoMethodRequestHandler.handleRequest: 259\nlambdainternal.EventHandlerLoader$PojoHandlerAsStreamHandler.handleRequest: 178\nlambdainternal.EventHandlerLoader$2.call: 888\nlambdainternal.AWSLambda.startRuntime: 293\nlambdainternal.AWSLambda.<clinit>: 64\njava.lang.Class.forName0: -2\njava.lang.Class.forName: 348\nlambdainternal.LambdaRTEntry.main: 114\n",
+      "error": "https://cavatica-api.sbgenomics.com/v2/projects-PATATE"
+    },
+    "status": 500,
+    "statusText": "",
+    "headers": {
+      "content-type": "application/json",
+      "content-length": "1568"
+    },
+    "config": {
+      "transformRequest": {},
+      "transformResponse": {},
+      "timeout": 0,
+      "xsrfCookieName": "XSRF-TOKEN",
+      "xsrfHeaderName": "X-XSRF-TOKEN",
+      "maxContentLength": -1,
+      "headers": {
+        "Accept": "application/json, text/plain, */*",
+        "Content-Type": "application/json;charset=utf-8",
+        "Authorization": "Bearer eyJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE1Njg2NDM0MzgsImV4cCI6MTU2ODcyOTgzOCwic3ViIjoiMWU5ZGNiNTItNjkxNi00NjE5LThkN2ItYWYyNzFmMTIzY2YyIiwiaXNzIjoiZWdvIiwiYXVkIjpbXSwianRpIjoiOWNhNGEwNDctZjNmYi00MTA1LTgxNzItYWNkMTdmNmU0YTQ5IiwiY29udGV4dCI6eyJ1c2VyIjp7Im5hbWUiOiJqdWxpZW4uYmVydWJlQGdtYWlsLmNvbSIsImVtYWlsIjoianVsaWVuLmJlcnViZUBnbWFpbC5jb20iLCJzdGF0dXMiOiJBcHByb3ZlZCIsImZpcnN0TmFtZSI6Ikp1bGllbiIsImxhc3ROYW1lIjoiQsOpcnViw6kiLCJjcmVhdGVkQXQiOiIyMDE5LTAxLTMxIDIxOjI3OjUzLjUwNiIsImxhc3RMb2dpbiI6IjIwMTktMDktMTYgMDI6MTc6MTgiLCJwcmVmZXJyZWRMYW5ndWFnZSI6bnVsbCwiZ3JvdXBzIjpbXSwicm9sZXMiOlsiQURNSU4iXSwicGVybWlzc2lvbnMiOltdfX19.FR2h-Ups0ah4ZQsRqdVKt2URnf0tJ3QztN1GOdcxoRr-m2QbcwsOgKlR7hpqNtO_WYqWXp6G4fTxaPqpFvZ2qCwRDlZ7q3wy_nAy2mS_hO85RnaY8V9ExxxC5fAivnUu2I1pzHEp-a67Jc8jB4umlzT1XlhVWbFrJfZWlDFlIZ48U--9lFYDpAUTBmlSYq67eKy9QAkqpprE843qTdj-LDipXkH_JrUHy0EIuotBudgTHWrFv9NunlRzt3T7M354Jcr87ssuk_YxPia6TpLGgrsGtLfOA0JdWi3bfbfZDmVGc0KUx4iDwJxhT9Y0TA6JSzBuYdPhnAEe6yjuW_uSZg"
+      },
+      "method": "post",
+      "url": "https://key-manager-qa.kidsfirstdrc.org/cavatica",
+      "data": "{\"path\":\"/projects-PATATE\",\"method\":\"GET\"}"
+    },
+    "request": {}
+  }
+}

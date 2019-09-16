@@ -4,10 +4,15 @@ import { chunk as makeChunks } from 'lodash';
 import projectDescriptionPath from './projectDescription.md';
 import { memoize } from 'lodash';
 import { CAVATICA_DATASET_MAPPING } from 'common/constants';
+import { handleErrorWithRetry } from 'services/errorHandling';
 
 // All these services call out to a proxy service
 //  The body of the request contains all details for the request that should be sent to the cavatica API
 //  Documentation on the cavatica API: http://docs.cavatica.org/docs/the-api
+
+const handleCavaticaErrors = error => {
+  console.warn('🔥 handleCavaticaErrors', JSON.stringify(error, null, 2));
+};
 
 /** getUser()
   Return object structure:
@@ -36,7 +41,7 @@ export const getUser = async () => {
     });
     data = response.data;
   } catch (error) {
-    console.warn(error);
+    handleCavaticaErrors(error);
   }
   return data;
 };
@@ -58,7 +63,7 @@ export const getBillingGroups = async () => {
     });
     items = response.data.items;
   } catch (error) {
-    console.warn(error);
+    handleCavaticaErrors(error);
   }
   return items;
 };
@@ -72,17 +77,26 @@ export const getBillingGroups = async () => {
     }
  */
 export const getProjects = async () => {
-  let items;
-  try {
-    const response = await ajax.post(cavaticaApiRoot, {
-      path: '/projects',
+  return await handleErrorWithRetry(() =>
+    ajax.post(cavaticaApiRoot, {
+      path: '/projects-PATATE',
       method: 'GET',
-    });
-    items = response.data.items;
-  } catch (error) {
-    console.warn(error);
-  }
-  return items;
+    }),
+  ).then(response => response.data.items);
+  // TODO JB ? : handle unhandled errors???
+  //.catch(...);
+
+  // let items;
+  // try {
+  // return ajax.post(cavaticaApiRoot, {
+  //   path: '/projects-PATATE',
+  //   method: 'GET',
+  // });
+  // items = response.data.items;
+  // } catch (error) {
+  //   handleCavaticaErrors(error);
+  // }
+  // return items;
 };
 
 /**
@@ -113,7 +127,7 @@ const createProject = async ({ name, billing_group, description = '' }) => {
     });
     data = response.data;
   } catch (error) {
-    console.warn(error);
+    handleCavaticaErrors(error);
   }
   return data;
 };
@@ -127,7 +141,7 @@ export const getFiles = async () => {
     });
     data = response.data;
   } catch (error) {
-    console.warn(error);
+    handleCavaticaErrors(error);
   }
   return data;
 };
@@ -141,7 +155,7 @@ export const getMembers = async ({ project }) => {
     });
     data = response.data;
   } catch (error) {
-    console.warn(error);
+    handleCavaticaErrors(error);
   }
   return data;
 };
@@ -155,7 +169,7 @@ export const getTasks = async ({ type, project }) => {
     });
     data = response.data;
   } catch (error) {
-    console.warn(error);
+    handleCavaticaErrors(error);
   }
   return data;
 };
@@ -205,7 +219,7 @@ export const convertFenceUuids = async ({ ids, fence }) => {
       });
       items.push(...response.data.items);
     } catch (error) {
-      console.warn(error);
+      handleCavaticaErrors(error);
     }
   }
   return items;
@@ -235,7 +249,7 @@ export const copyFiles = async ({ project, ids }) => {
       });
       data.push(response.data);
     } catch (error) {
-      console.warn(error);
+      handleCavaticaErrors(error);
     }
   }
   return data;
