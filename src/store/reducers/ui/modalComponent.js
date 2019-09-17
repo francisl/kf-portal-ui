@@ -4,6 +4,7 @@ const initialState = {
   modalName: '',
   modalProps: {},
   className: '',
+  actions: {},
 };
 
 export default (state = initialState, action) => {

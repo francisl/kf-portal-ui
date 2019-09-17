@@ -9,28 +9,29 @@ import { handleErrorWithRetry } from './index';
 chai.use(chaiAsPromised);
 
 describe(cyan.bold('errorHandling service'), () => {
+  const rejector = () => Promise.reject();
+
   describe('handleErrorWithRetry', () => {
     it('invoke the provided function', () => {
       const func = sinon.spy();
-      handleErrorWithRetry(func);
+      handleErrorWithRetry(func, rejector);
       expect(func.called);
     });
 
     describe('when the provided function returns a value', () => {
       it('returns a promise that resolves to the returned value', async () => {
         const func = sinon.stub().returns('success!');
-        const value = await handleErrorWithRetry(func);
-        expect(value).to.equal('success!');
+        return expect(handleErrorWithRetry(func, rejector)).to.eventually.be.equal('success!');
       });
     });
 
     describe('when the provided function throws', () => {
       it('returns a promise that rejects to the thrown error', () => {
         const func = sinon.stub().throws(new Error('error!'));
-        expect(handleErrorWithRetry(func)).to.be.rejectedWith('error!');
+        expect(handleErrorWithRetry(func, rejector)).to.be.rejectedWith('error!');
       });
 
-      it('allows to retry the provided function, fails it the retrial fails', async () => {
+      it('allows to retry the provided function, fails it the retrial fails', () => {
         const func = sinon.stub();
         const retrial = sinon.stub();
 
@@ -46,10 +47,10 @@ describe(cyan.bold('errorHandling service'), () => {
         func.onCall(2).throws(new Error('error 3'));
         retrial.onCall(2).returns(Promise.reject(new Error('OVER')));
 
-        return expect(handleErrorWithRetry(func, retrial)).to.be.rejectedWith('error 3');
+        expect(handleErrorWithRetry(func, retrial)).to.be.rejectedWith('error 3');
       });
 
-      it('allows to retry the provided function until it succeeds', async () => {
+      it('allows to retry the provided function until it succeeds', () => {
         const func = sinon.stub();
         const retrial = sinon.stub();
 
@@ -64,7 +65,7 @@ describe(cyan.bold('errorHandling service'), () => {
         // third's one a charm
         func.onCall(2).returns(42);
 
-        return expect(handleErrorWithRetry(func, retrial)).to.eventually.be.equal(42);
+        expect(handleErrorWithRetry(func, retrial)).to.eventually.be.equal(42);
       });
 
       it('passes the original error to the retrial function', async () => {
@@ -79,23 +80,27 @@ describe(cyan.bold('errorHandling service'), () => {
           return expect(retrial.firstCall.args[0]).to.be.eq(thrownError);
         });
       });
+
+      it('fails if no retrial function is provided', async () => {
+        const func = sinon.stub().throws(new Error('error!'));
+        expect(handleErrorWithRetry(func)).to.be.rejectedWith('error!');
+      });
     });
 
     describe('when the provided function returns a resolved promise', () => {
-      it('returns a promise that resolves to the same value', async () => {
+      it('returns a promise that resolves to the same value', () => {
         const func = sinon.stub().returns(Promise.resolve('success!'));
-        const value = await handleErrorWithRetry(func);
-        return expect(value).to.be.equal('success!');
+        expect(handleErrorWithRetry(func, rejector)).to.eventually.be.equal('success!');
       });
     });
 
     describe('when the provided function returns a rejected promise', () => {
-      it('returns a promise that rejects to the same error', async () => {
+      it('returns a promise that rejects to the same error', () => {
         const func = sinon.stub().returns(Promise.reject('error!'));
-        return expect(handleErrorWithRetry(func)).to.eventually.be.rejectedWith('error!');
+        expect(handleErrorWithRetry(func, rejector)).to.be.rejectedWith('error!');
       });
 
-      it('allows to retry the provided function, fails it the retrial fails', async () => {
+      it('allows to retry the provided function, fails it the retrial fails', () => {
         const func = sinon.stub();
         const retrial = sinon.stub();
 
@@ -111,10 +116,10 @@ describe(cyan.bold('errorHandling service'), () => {
         func.onCall(2).returns(Promise.reject('error 3'));
         retrial.onCall(2).returns(Promise.reject(new Error('OVER')));
 
-        return expect(handleErrorWithRetry(func, retrial)).to.be.rejectedWith('error 3');
+        expect(handleErrorWithRetry(func, retrial)).to.be.rejectedWith('error 3');
       });
 
-      it('allows to retry the provided function until it succeeds', async () => {
+      it('allows to retry the provided function until it succeeds', () => {
         const func = sinon.stub();
         const retrial = sinon.stub();
 
@@ -125,7 +130,7 @@ describe(cyan.bold('errorHandling service'), () => {
         // third's one a charm
         func.onCall(1).returns(42);
 
-        return expect(handleErrorWithRetry(func, retrial)).to.eventually.be.equal(42);
+        expect(handleErrorWithRetry(func, retrial)).to.eventually.be.equal(42);
       });
 
       it('passes the original rejection reason to the retrial function', async () => {

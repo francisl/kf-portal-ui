@@ -7,13 +7,14 @@ import { MODAL_OPEN, MODAL_CLOSE } from '../../actionTypes';
  * @param {Object} modalProps - the props to pass to the modal component.
  * @param {String} className - an optional `class` to apply to the modal container.
  */
-export const openModal = (modalName, modalProps = {}, className = '') => {
+export const openModal = (modalName, modalProps = {}, className = '', actions = {}) => {
   return {
     type: MODAL_OPEN,
     payload: {
       modalName: String(modalName),
       modalProps: isObject(modalProps) ? modalProps : {},
       className,
+      actions,
     },
   };
 };

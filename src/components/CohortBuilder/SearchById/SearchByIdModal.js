@@ -12,6 +12,7 @@ import { WhiteButton, TealActionButton } from 'uikit/Button';
 import { H3 } from 'uikit/Headings';
 import { parseInputFiles } from 'common/parseInputFiles';
 import { setSqonValueAtIndex } from 'common/sqonUtils';
+// TODO JB : move to ...
 import { ModalTitle } from 'components/Modal/ui';
 import { closeModal } from 'store/actionCreators/ui/modalComponent';
 import { setSqons } from 'store/actionCreators/virtualStudies';

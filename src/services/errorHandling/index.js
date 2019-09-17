@@ -36,27 +36,13 @@ export const handleErrorWithRetry = (func, retrialFn) =>
       // no error : just settle the promise
       .then(finalResolve)
       // an error occured, try to recover from it
-      .catch(err => {
-        if (typeof retrialFn !== 'function') {
-          return finalReject(err);
-        }
-
-        let result;
-        try {
-          result = retrialFn(err);
-          if (!isPromise(result)) {
-            return finalReject(new Error('retrialFn did not return a Promise as expected'));
-          }
-        } catch (error) {
-          return finalReject(error);
-        }
-
-        return result
-          .catch(() => finalReject(err))
+      .catch(err =>
+        wrapInPromise(() => retrialFn(err))
           .then(() =>
             handleErrorWithRetry(func, retrialFn)
               .then(finalResolve)
               .catch(finalReject),
-          );
-      });
+          )
+          .catch(() => finalReject(err)),
+      );
   });

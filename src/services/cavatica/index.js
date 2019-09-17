@@ -4,14 +4,16 @@ import { chunk as makeChunks } from 'lodash';
 import projectDescriptionPath from './projectDescription.md';
 import { memoize } from 'lodash';
 import { CAVATICA_DATASET_MAPPING } from 'common/constants';
-import { handleErrorWithRetry } from 'services/errorHandling';
+
+import { cavaticaApi } from '../../store/actionCreators/ui/cavatica';
 
 // All these services call out to a proxy service
 //  The body of the request contains all details for the request that should be sent to the cavatica API
 //  Documentation on the cavatica API: http://docs.cavatica.org/docs/the-api
 
+// TODO JB : REMOVE
 const handleCavaticaErrors = error => {
-  console.warn('🔥 handleCavaticaErrors', JSON.stringify(error, null, 2));
+  // console.warn('🔥 handleCavaticaErrors', JSON.stringify(error, null, 2));
 };
 
 /** getUser()
@@ -77,14 +79,10 @@ export const getBillingGroups = async () => {
     }
  */
 export const getProjects = async () => {
-  return await handleErrorWithRetry(() =>
-    ajax.post(cavaticaApiRoot, {
-      path: '/projects-PATATE',
-      method: 'GET',
-    }),
-  ).then(response => response.data.items);
-  // TODO JB ? : handle unhandled errors???
-  //.catch(...);
+  return cavaticaApi({
+    path: '/projects-patate',
+    method: 'GET',
+  }).then(response => response.data.items);
 
   // let items;
   // try {
