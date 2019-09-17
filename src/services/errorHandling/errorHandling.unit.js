@@ -8,8 +8,7 @@ import { handleErrorWithRetry } from './index';
 // adds Promise-based testing utilities and assertions
 chai.use(chaiAsPromised);
 
-// TODO JB : remove `.only`
-describe.only(cyan.bold('errorHandling service'), () => {
+describe(cyan.bold('errorHandling service'), () => {
   describe('handleErrorWithRetry', () => {
     it('invoke the provided function', () => {
       const func = sinon.spy();
@@ -67,6 +66,19 @@ describe.only(cyan.bold('errorHandling service'), () => {
 
         return expect(handleErrorWithRetry(func, retrial)).to.eventually.be.equal(42);
       });
+
+      it('passes the original error to the retrial function', async () => {
+        const func = sinon.stub();
+        const thrownError = new Error('error 1');
+        func.onCall(0).throws(thrownError);
+        func.onCall(1).returns();
+
+        const retrial = sinon.stub().returns(Promise.resolve());
+
+        return handleErrorWithRetry(func, retrial).then(() => {
+          return expect(retrial.firstCall.args[0]).to.be.eq(thrownError);
+        });
+      });
     });
 
     describe('when the provided function returns a resolved promise', () => {
@@ -114,6 +126,19 @@ describe.only(cyan.bold('errorHandling service'), () => {
         func.onCall(1).returns(42);
 
         return expect(handleErrorWithRetry(func, retrial)).to.eventually.be.equal(42);
+      });
+
+      it('passes the original rejection reason to the retrial function', async () => {
+        const func = sinon.stub();
+        const reason = 'error 1';
+        func.onCall(0).returns(Promise.reject(reason));
+        func.onCall(1).returns();
+
+        const retrial = sinon.stub().returns(Promise.resolve());
+
+        return handleErrorWithRetry(func, retrial).then(() => {
+          return expect(retrial.firstCall.args[0]).to.be.eq(reason);
+        });
       });
     });
   });

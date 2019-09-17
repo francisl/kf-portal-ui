@@ -1,5 +1,27 @@
 import { types } from 'util';
-// import noop from 'lodash/noop';
+
+const isPromise =
+  (types && types.isPromise) ||
+  (fn => ['then', 'catch'].every(prop => typeof fn[prop] === 'function'));
+
+/**
+ * Wraps the provided `func` in a try/catch and ensures that a Promise is returned.
+ * @param {Function} func - any parameterless function
+ * @returns - A promise, I promise.
+ */
+const wrapInPromise = async func =>
+  new Promise((resolve, reject) => {
+    try {
+      const result = func();
+      if (isPromise(result)) {
+        result.catch(reject).then(resolve);
+      } else {
+        resolve(result);
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
 
 /**
  * Wraps a `func` function and handles either an error or failing promise.
@@ -7,47 +29,34 @@ import { types } from 'util';
  * @param {Function} retrialFn - an optional function to call to check wether to retry the `func` or not.
  * @returns {Promise} - a promise that fails if the `func` ends up not being executed successfully
  */
-export const handleErrorWithRetry = (func, retrialFn) => {
-  return new Promise((finalResolve, finalReject) => {
+export const handleErrorWithRetry = (func, retrialFn) =>
+  new Promise((finalResolve, finalReject) => {
     // wrap the function in a promise for consistency
-    //  if it does not returns a promise
-    new Promise((resolve, reject) => {
-      try {
-        const result = func();
-        if (types.isPromise(result)) {
-          result.catch(reject).then(resolve);
-        } else {
-          resolve(result);
-        }
-      } catch (error) {
-        reject(error);
-      }
-    })
+    wrapInPromise(func)
+      // no error : just settle the promise
       .then(finalResolve)
+      // an error occured, try to recover from it
       .catch(err => {
         if (typeof retrialFn !== 'function') {
-          finalReject(err);
+          return finalReject(err);
         }
 
+        let result;
         try {
-          const result = retrialFn();
-          if (!types.isPromise(result)) {
-            finalReject(new Error('retrialFn did not return a Promise as expected'));
+          result = retrialFn(err);
+          if (!isPromise(result)) {
+            return finalReject(new Error('retrialFn did not return a Promise as expected'));
           }
-
-          result
-            .catch(() => {
-              finalReject(err);
-            })
-            .then(() => {
-              handleErrorWithRetry(func, retrialFn)
-                .then(finalResolve)
-                .catch(finalReject);
-            });
         } catch (error) {
-          finalReject(error);
-          return;
+          return finalReject(error);
         }
+
+        return result
+          .catch(() => finalReject(err))
+          .then(() =>
+            handleErrorWithRetry(func, retrialFn)
+              .then(finalResolve)
+              .catch(finalReject),
+          );
       });
   });
-};
