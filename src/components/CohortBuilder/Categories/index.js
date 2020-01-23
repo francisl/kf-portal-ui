@@ -116,6 +116,7 @@ const CATEGORY_FIELDS = {
     'biospecimens.diagnoses.mondo_id_diagnosis',
     'biospecimens.diagnoses.ncit_id_diagnosis',
     'biospecimens.diagnoses.source_text_diagnosis',
+    'biospecimens.duo_code',
     'biospecimens.method_of_sample_procurement',
     'biospecimens.source_text_tissue_type',
     'biospecimens.ncit_id_tissue_type',
