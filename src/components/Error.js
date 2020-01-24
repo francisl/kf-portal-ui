@@ -26,14 +26,15 @@ const Error = ({ text = 'An error has occurred, please try again later' }) => (
           border: 'solid 1px #e0e1e6',
           boxShadow: '0 0 9.5px 0.5px rgba(160, 160, 163, 0.25)',
           backgroundColor: '#ffffff',
+          textAlign: 'center',
         }}
       >
         <Row>
-          <Title level={2}>We can't seem to find the page you are looking for.</Title>
+          <Title level={2} >We can't seem to find the page you are looking for.</Title>
         </Row>
         <Row>
-          <div>Reorient yourself by returning to your <a>Dashboard</a></div>
-          <div>or start a new search in the <a>File Repository</a></div>
+          <div>Reorient yourself by returning to your <a href={'/dashboard'}>Dashboard</a></div>
+          <div>or start a new search in the <a href={'/search/file'} >File Repository</a></div>
         </Row>
       </Card>
     </Col>
