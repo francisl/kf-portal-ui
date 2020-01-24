@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { compose, lifecycle, withState } from 'recompose';
-import { isNull, isUndefined, get } from 'lodash';
+import { get, isNull, isUndefined } from 'lodash';
 
 import Row from 'uikit/Row';
 import Column from 'uikit/Column';
@@ -10,19 +10,18 @@ import { InfoBoxRow } from 'uikit/InfoBox';
 import ExternalLink from 'uikit/ExternalLink';
 import LoadingSpinner from 'uikit/LoadingSpinner';
 import { Link } from 'uikit/Core';
-import GenericErrorDisplay from 'uikit/GenericErrorDisplay';
 
-import { trackUserInteraction, TRACKING_EVENTS } from 'services/analyticsTracking';
+import { TRACKING_EVENTS, trackUserInteraction } from 'services/analyticsTracking';
 import { kfWebRoot } from 'common/injectGlobals';
-import { FENCES } from 'common/constants';
+import { FENCES, FILE_VIEW } from 'common/constants';
 
 import {
-  EntityTitleBar,
-  EntityTitle,
   EntityActionBar,
   EntityContent,
-  EntityContentSection,
   EntityContentDivider,
+  EntityContentSection,
+  EntityTitle,
+  EntityTitleBar,
 } from 'components/EntityPage';
 
 import { withApi } from 'services/api';
@@ -30,15 +29,9 @@ import { buildSqonForIds } from 'services/arranger';
 
 import ArrangerDataProvider from 'components/ArrangerDataProvider';
 
-import {
-  particpantBiospecimenColumns,
-  toParticpantBiospecimenData,
-} from './participantBiospecimenTable';
+import { particpantBiospecimenColumns, toParticpantBiospecimenData } from './participantBiospecimenTable';
 
-import {
-  experimentalStrategiesColumns,
-  toExperimentalStrategiesData,
-} from './experimentalStrategies';
+import { experimentalStrategiesColumns, toExperimentalStrategiesData } from './experimentalStrategies';
 
 import { toFilePropertiesSummary } from './fileProperties';
 import { hasSequencingReadProperties, toSequencingReadProperties } from './sequencingProperties';
@@ -47,10 +40,10 @@ import CavaticaAnalyse from './CavaticaAnalyse';
 import Download from './Download';
 import ShareButton from 'uikit/ShareButton';
 import { checkUserFilePermission } from 'services/fileAccessControl';
-import { FILE_VIEW } from 'common/constants';
 
 import { fillCenter } from 'theme/tempTheme.module.css';
 import '../EntityPage.css';
+import Error from '../../Error';
 
 // file types
 const FILE_TYPE_BAM = 'bam';
@@ -298,9 +291,7 @@ const FileEntity = ({ api, fileId, isPageLoading, hasFilePermission }) => (
 
       if (data === null) {
         return (
-          <Column className="entityPage-container" style={{ justifyContent: 'center' }}>
-            <GenericErrorDisplay error={'FILE NOT FOUND'} />
-          </Column>
+          <Error/>
         );
       }
 

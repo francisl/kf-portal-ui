@@ -6,7 +6,7 @@ import { Typography } from 'antd';
 
 const { Title } = Typography;
 
-const Error = ({ text = 'An error has occurred, please try again later' }) => (
+const Error = () => (
   <Row
     type="flex"
     justify="center"
