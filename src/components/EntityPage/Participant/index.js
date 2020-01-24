@@ -16,6 +16,7 @@ import ParticipantClinical from './ParticipantClinical';
 import { fetchParticipant } from './actionCreators';
 
 import '../EntityPage.css';
+import Error from '../../Error';
 
 const getTags = participant => {
   const probandTag = participant.is_proband ? 'Proband' : 'Family Member';
@@ -82,7 +83,7 @@ class ParticipantEntity extends React.Component {
     }
 
     if (participant === null) {
-      return <GenericErrorDisplay error={'PARTICIPANT NOT FOUND'} />;
+      return <Error/>;
     }
 
     return (
