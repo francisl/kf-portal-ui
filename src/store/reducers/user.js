@@ -11,7 +11,7 @@ import {
   DELETE_PROFILE,
   REQUEST_IS_PUBLIC_TOGGLE,
   RECEIVE_IS_PUBLIC_TOGGLE,
-  FAILURE_IS_PUBLIC_TOGGLE,
+  FAILURE_IS_PUBLIC_TOGGLE, CLEAR_ERROR_PROFILE,
 } from '../actionTypes';
 
 const initialState = {
@@ -74,6 +74,11 @@ export default (state = initialState, action) => {
         ...state,
         isTogglingProfileStatus: false,
         isTogglingProfileStatusInError: action.payload,
+      };
+    case CLEAR_ERROR_PROFILE:
+      return {
+        ...state,
+        errorProfile: action.payload,
       };
     default:
       return state;

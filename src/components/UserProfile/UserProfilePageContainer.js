@@ -12,6 +12,7 @@ import {
   fetchProfileIfNeeded,
   updateUserProfile,
   deleteProfile,
+  requestClearErrorProfile,
 } from '../../store/actionCreators/user';
 import Error from '../Error';
 import isEmpty from 'lodash/isEmpty';
@@ -81,8 +82,9 @@ class UserProfilePageContainer extends React.Component {
   }
 
   componentWillUnmount() {
-    const { onDeleteProfile } = this.props;
+    const { onDeleteProfile, clearErrorProfile } = this.props;
     onDeleteProfile();
+    clearErrorProfile();
   }
 
   submit = async values => {
@@ -119,7 +121,7 @@ class UserProfilePageContainer extends React.Component {
     });
   };
 
-  onBreakPoint = (broken) => {
+  onBreakPoint = broken => {
     return this.setState({ collapsed: broken });
   };
 
@@ -176,6 +178,7 @@ const mapDispatchToProps = dispatch => {
     onFetchProfile: userInfo => dispatch(fetchProfileIfNeeded(userInfo)),
     onUpdateProfile: user => dispatch(updateUserProfile(user)),
     onDeleteProfile: () => dispatch(deleteProfile()),
+    clearErrorProfile: () => dispatch(requestClearErrorProfile()),
   };
 };
 

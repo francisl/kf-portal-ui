@@ -1,17 +1,18 @@
 import {
-  LOGIN_SUCCESS,
-  LOGIN_FAILURE,
-  LOGOUT,
-  REQUEST_PROFILE,
-  RECEIVE_PROFILE,
-  FAILURE_PROFILE,
-  REQUEST_PROFILE_UPDATE,
-  FAILURE_UPDATE,
-  UPDATE_USER_SUCCESS,
+  CLEAR_ERROR_PROFILE,
   DELETE_PROFILE,
-  REQUEST_IS_PUBLIC_TOGGLE,
-  RECEIVE_IS_PUBLIC_TOGGLE,
   FAILURE_IS_PUBLIC_TOGGLE,
+  FAILURE_PROFILE,
+  FAILURE_UPDATE,
+  LOGIN_FAILURE,
+  LOGIN_SUCCESS,
+  LOGOUT,
+  RECEIVE_IS_PUBLIC_TOGGLE,
+  RECEIVE_PROFILE,
+  REQUEST_IS_PUBLIC_TOGGLE,
+  REQUEST_PROFILE,
+  REQUEST_PROFILE_UPDATE,
+  UPDATE_USER_SUCCESS,
 } from '../actionTypes';
 import { apiInitialized } from 'services/api';
 import { getOtherUserProfile, getUserLoggedInProfile, updateProfile } from 'services/profiles';
@@ -79,8 +80,8 @@ const fetchProfile = userInfo => {
     dispatch(requestProfile());
     try {
       const fetchedProfile = await (userInfo.isSelf
-          ? getUserLoggedInProfile()
-          : getOtherUserProfile(userInfo.userID));
+        ? getUserLoggedInProfile()
+        : getOtherUserProfile(userInfo.userID));
       return onSuccess(fetchedProfile);
     } catch (e) {
       return onError(e);
@@ -166,4 +167,11 @@ export const toggleIsPublic = user => {
 
 export const deleteProfile = () => {
   return dispatch => dispatch({ type: DELETE_PROFILE });
+};
+
+export const requestClearErrorProfile = () => {
+  return {
+    type: CLEAR_ERROR_PROFILE,
+    payload: null,
+  };
 };
