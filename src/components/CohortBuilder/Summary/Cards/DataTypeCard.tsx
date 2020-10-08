@@ -1,5 +1,5 @@
 import React from 'react';
-import Card from './SummaryCard';
+import Card from '@ferlab-ui/core-react/lib/esnext/cards/GridCard';
 import DataTypeChart from './DataTypeChart';
 
 type DataTypeCardProps = {

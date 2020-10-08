@@ -10,7 +10,8 @@
   bottom: 0;
 }
 
-.dynamic-content {
+.dynamic-content,
+.core-grid-card-dynamic-content {
   height: 100%;
 }
 
