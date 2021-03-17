@@ -1,9 +1,8 @@
 /* eslint-disable react/display-name */
-import React, { FC } from 'react';
+import React from 'react';
 import history from 'services/history';
 
 import { Input, Layout, Tooltip } from 'antd';
-import { useGetExtendedMappings, useGetStudiesFilterBuckets } from 'store/graphql/studies/actions';
 import StackLayout from '@ferlab/ui/core/layout/StackLayout';
 import GridCard from '@ferlab/ui/core/view/GridCard';
 import { IFilter, IFilterGroup, VisualType } from '@ferlab/ui/core/components/filters/types';
@@ -37,15 +36,17 @@ const searchStoryNameCode = (e: KeyboardEvent<HTMLInputElement>) => {
   updateQueryFilters(history, filterGroup.field, sqon);
 };
 
-const StudiesFiltersSider: FC = () => {
-  const { loading: loadingBuckets, results: aggs } = useGetStudiesFilterBuckets();
-  const { loading: mappingLoading, results: studyMapping } = useGetExtendedMappings('study');
+const StudiesFiltersSider = ({
+  mappingLoading,
+  studyMapping,
+  data,
+  loading,
+}: any): React.ReactElement => {
+  const aggs = data?.aggregations || [];
 
-  if (loadingBuckets || mappingLoading || !aggs) {
-    return null;
-  }
-
-  return (
+  return loading || mappingLoading || !data ? (
+    <div />
+  ) : (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider
         trigger={null}

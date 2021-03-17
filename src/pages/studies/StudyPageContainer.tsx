@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import StackLayout from '@ferlab/ui/core/layout/StackLayout';
 import QueryBuilder from '@ferlab/ui/core/components/QueryBuilder';
 import {
@@ -6,19 +6,11 @@ import {
   setQueryBuilderCache,
   updateQueryFilters,
   updateQueryParam,
-  useFilters,
 } from './utils';
 import history from 'services/history';
 import StudyTableContainer from './StudyTableContainer';
 
-interface IBucket {
-  doc_count: number;
-  key: string;
-}
-
-const StudyPageContainer: FC = () => {
-  const { filters, mappedFilters } = useFilters();
-
+const StudyPageContainer = ({ data, loading, filters }: any): React.ReactElement => {
   const totalStudies = 10; // data.length || 0;
 
   return (
@@ -34,7 +26,7 @@ const StudyPageContainer: FC = () => {
         onUpdate={(state) => setQueryBuilderCache('study-repo', state)}
         total={totalStudies}
       />
-      <StudyTableContainer />
+      <StudyTableContainer data={data} loading={loading} />
     </StackLayout>
   );
 };
