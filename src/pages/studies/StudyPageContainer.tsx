@@ -9,6 +9,7 @@ import {
 } from './utils';
 import history from 'services/history';
 import StudyTableContainer from './StudyTableContainer';
+import styles from './StudiesPageContainer.module.scss';
 
 const StudyPageContainer = ({ data, loading, filters }: any): React.ReactElement => {
   const totalStudies = 10; // data.length || 0;
@@ -26,7 +27,10 @@ const StudyPageContainer = ({ data, loading, filters }: any): React.ReactElement
         onUpdate={(state) => setQueryBuilderCache('study-repo', state)}
         total={totalStudies}
       />
-      <StudyTableContainer data={data} loading={loading} />
+
+      <StackLayout vertical className={styles.tableContainer}>
+        <StudyTableContainer data={data} loading={loading} />
+      </StackLayout>
     </StackLayout>
   );
 };
